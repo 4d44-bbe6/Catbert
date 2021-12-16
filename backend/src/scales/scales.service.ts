@@ -64,16 +64,12 @@ export class ScalesService {
 
   deleteScale(id: string) {
     const index = this.findScale(id)[1];
-    console.log(index);
     this.scales.splice(index, 1);
   }
 
   private findScale(id: string): [Scale, number] {
-    console.log(id);
     const scaleIdx = this.scales.findIndex((scale) => scale.id === id);
-    console.log(scaleIdx);
     const scale = this.scales[scaleIdx];
-    console.log(scale);
     if (!scale) {
       throw new NotFoundException('Er kan geen product worden gevonden.');
     }

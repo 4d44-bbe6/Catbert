@@ -14,7 +14,7 @@ export class ScalesController {
   constructor(private readonly scalesService: ScalesService) {}
 
   @Post()
-  adddScale(
+  addScale(
     @Body('name') name: string,
     @Body('location') location: string,
     @Body('description') description: string,
