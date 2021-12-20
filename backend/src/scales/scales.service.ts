@@ -1,78 +1,84 @@
+import * as mongoose from 'mongoose';
+import { Model } from 'mongoose';
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
 import { Scale } from './scale.model';
-import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class ScalesService {
-  private scales: Scale[] = [
+  constructor(
+    @InjectModel('Scale') private readonly scaleModel: Model<Scale>,
+  ) {}
+
+  async addScale(
+    name: string,
+    description: string,
+    location: string,
+  ): Promise<string> {
+    const newScale = new this.scaleModel({
+      name,
+      description,
+      location,
+    });
+    const result = await newScale.save();
+    return result.id as string;
+  }
+
+  async getScales(): Promise<
     {
-      id: '50974fc0-131d-490d-917a-c222c79d5b8e',
-      name: 'scale #1',
-      location: 'Woonkamer',
-      description: 'Omschrijving volgt',
-      status: 'new',
-      allowedPets: [],
-    },
-    {
-      id: '3282f224-5e86-4864-a522-c99f2e104e9e',
-      name: 'scale #2',
-      location: 'Bijkeuken',
-      description: 'Omschrijving volgt',
-      status: 'new',
-      allowedPets: [],
-    },
-    {
-      id: '32e0af52-bf76-41c0-ac03-a3d33e266273',
-      name: 'scale #2',
-      location: 'Woonkamer',
-      description: 'Omschrijving volgt',
-      status: 'used',
-      allowedPets: [],
-    },
-  ];
-
-  addScale(name: string, location: string, description: string): string {
-    const id = uuidv4();
-    const newScale = new Scale(id, name, location, description, 'new', []);
-    this.scales.push(newScale);
-    return id;
+      id: string;
+      name: string;
+      description: string;
+      location: string;
+    }[]
+  > {
+    const scales = await this.scaleModel.find().exec();
+    return scales.map((scale) => ({
+      id: scale.id,
+      name: scale.name,
+      description: scale.description,
+      location: scale.location,
+    }));
   }
 
-  getAllScales() {
-    return [...this.scales];
+  async getScale(id: string): Promise<Scale> {
+    return await this.findScale(id);
   }
 
-  getSingleScale(id: string) {
-    const scale = this.findScale(id)[0];
-    return { ...scale };
+  async updateScale(
+    id: string,
+    name: string,
+    description: string,
+    location: string,
+  ): Promise<Scale> {
+    const scale = await this.findScale(id);
+    if (name) scale.name = name;
+    if (description) scale.description = description;
+    if (location) scale.location = location;
+    return scale.save();
   }
 
-  updateScale(id: string, name: string, location: string, description: string) {
-    const [scale, index] = this.findScale(id);
-    const updatedScale = { ...scale };
-    if (name) {
-      updatedScale.name = name;
+  async deleteScale(id: string): Promise<{ id: string }> {
+    const result = await this.scaleModel
+      .deleteOne({
+        _id: id,
+      })
+      .exec();
+    if (result.deletedCount === 0) {
+      throw new NotFoundException('No scale found');
     }
-    if (location) {
-      updatedScale.location = location;
-    }
-    if (description) {
-      updatedScale.description = description;
-    }
-    this.scales[index] = updatedScale;
+    return {
+      id,
+    };
   }
 
-  deleteScale(id: string) {
-    const index = this.findScale(id)[1];
-    this.scales.splice(index, 1);
-  }
-
-  private findScale(id: string): [Scale, number] {
-    const scaleIdx = this.scales.findIndex((scale) => scale.id === id);
-    const scale = this.scales[scaleIdx];
+  private async findScale(id: string): Promise<Scale> {
+    const scale = await this.scaleModel
+      .findById(new mongoose.Types.ObjectId(id))
+      .exec();
     if (!scale) {
-      throw new NotFoundException('Er kan geen product worden gevonden.');
+      throw new NotFoundException('No scale found.');
     }
-    return [scale, scaleIdx];
+    return scale;
   }
 }

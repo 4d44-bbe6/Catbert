@@ -7,6 +7,8 @@ import {
   Patch,
   Delete,
 } from '@nestjs/common';
+import { Scale } from './scale.model';
+
 import { ScalesService } from './scales.service';
 
 @Controller('scales')
@@ -14,41 +16,52 @@ export class ScalesController {
   constructor(private readonly scalesService: ScalesService) {}
 
   @Post()
-  addScale(
+  async addScale(
     @Body('name') name: string,
-    @Body('location') location: string,
     @Body('description') description: string,
-  ): any {
-    const scaleID = this.scalesService.addScale(name, location, description);
+    @Body('location') location: string,
+  ): Promise<{ id: string }> {
+    const generatedId = await this.scalesService.addScale(
+      name,
+      description,
+      location,
+    );
     return {
-      id: scaleID,
+      id: generatedId,
     };
   }
 
   @Get()
-  getAllScales() {
-    return this.scalesService.getAllScales();
+  async getScales() {
+    const scales = await this.scalesService.getScales();
+    return scales;
   }
 
   @Get(':id')
-  getScale(@Param('id') id: string) {
-    return this.scalesService.getSingleScale(id);
+  async getScale(@Param() id: string): Promise<Scale> {
+    const scale = await this.scalesService.getScale(id);
+    return scale;
   }
 
   @Patch(':id')
-  updateScale(
+  async updateScale(
     @Param('id') id: string,
     @Body('name') name: string,
     @Body('location') location: string,
     @Body('description') description: string,
-  ) {
-    this.scalesService.updateScale(id, name, location, description);
-    return null;
+  ): Promise<Scale> {
+    const result = await this.scalesService.updateScale(
+      id,
+      name,
+      location,
+      description,
+    );
+    return result;
   }
 
   @Delete(':id')
-  deleteScale(@Param('id') id: string) {
-    this.scalesService.deleteScale(id);
-    return null;
+  deleteScale(@Param('id') id: string): Promise<{ id: string }> {
+    const result = this.scalesService.deleteScale(id);
+    return result;
   }
 }

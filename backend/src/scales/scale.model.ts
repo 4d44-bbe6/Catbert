@@ -1,10 +1,14 @@
-export class Scale {
-  constructor(
-    public id: string,
-    public name: string,
-    public location: string,
-    public description: string,
-    public status: string,
-    public allowedPets: Array<string>,
-  ) {}
+import * as mongoose from 'mongoose';
+
+export const ScaleSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  description: { type: String },
+  location: { type: String },
+});
+
+export interface Scale extends mongoose.Document {
+  id: string;
+  name: string;
+  description: string;
+  location: string;
 }
