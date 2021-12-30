@@ -54,7 +54,7 @@ void setup()
     // Ethernet
     if (Ethernet.begin(mac) == 0)
     {
-        //Serial.println(F("Unable to configure Ethernet using DHCP"));
+        // Serial.println(F("Unable to configure Ethernet using DHCP"));
         for (;;)
             ;
     }

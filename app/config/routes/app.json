@@ -1,0 +1,27 @@
+[
+  {
+    "component": "HomeScreenContainer",
+    "defaultTabs": true,
+    "icon": "home",
+    "name": "Home",
+    "navigation": ["tabs"]
+  },
+  {
+    "component": "BowlsContainer",
+    "icon": "bowl",
+    "name": "Bowls",
+    "navigation": ["tabs"]
+  },
+  {
+    "component": "BowlsContainer",
+    "icon": "cat",
+    "name": "Cats",
+    "navigation": ["tabs"]
+  },
+  {
+    "component": "BowlsContainer",
+    "icon": "information",
+    "name": "About",
+    "navigation": ["tabs"]
+  }
+]

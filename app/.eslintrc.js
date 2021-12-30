@@ -2,6 +2,7 @@ module.exports = {
   env: {
     es2021: true,
     node: true,
+    browser: true,
   },
   extends: [
     'airbnb',
@@ -21,5 +22,10 @@ module.exports = {
     'react/react-in-jsx-scope': 'off',
     'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx'] }],
     'react/prop-types': 0,
+    'import/prefer-default-export': 'off',
+    'react/no-unstable-nested-components': [
+      'off',
+      { allowAsProps: true },
+    ],
   },
 };

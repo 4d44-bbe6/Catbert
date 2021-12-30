@@ -1,0 +1,13 @@
+{
+  "appInfo": {
+      "title": "login",
+      "version": "1.0.0"
+  },
+  "bowls": [{
+    "id": "61bf39cba5c5e88791ea926e",
+    "name": "",
+    "description": "Kattenbak voor alle katten",
+    "location": "Bijkeuken" 
+  }],
+  "cats": ["Ortiz", "Nano", "Solo"]
+}
