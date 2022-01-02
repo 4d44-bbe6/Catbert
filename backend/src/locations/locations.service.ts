@@ -1,63 +1,71 @@
+import * as mongoose from 'mongoose';
+import { Model } from 'mongoose';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Location } from './location.model';
-import { v4 as uuidv4 } from 'uuid';
+import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class LocationsService {
-  private locations: Location[] = [
-    {
-      id: '50974fc0-131d-490d-917a-c222c79d5b8e',
-      name: 'Woonkamer',
-      description: 'Omschrijving',
-    },
-    {
-      id: '6e78d364-5b72-4734-8e7f-98d5ddfaf429',
-      name: 'Bijkeuken',
-      description: 'Omschrijving',
-    },
-  ];
+  constructor(
+    @InjectModel('Scale') private readonly locationModel: Model<Location>,
+  ) {}
 
-  addLocation(name: string, description: string) {
-    const id = uuidv4();
-    const newLocation = new Location(id, name, description);
-    this.locations.push(newLocation);
-    return this.locations;
+  async addLocation(name: string, description: string): Promise<string> {
+    const newLocation = new this.locationModel({
+      name,
+      description,
+    });
+    const result = await newLocation.save();
+    return result.id as string;
   }
 
-  getAllLocations() {
-    return [...this.locations];
+  async getLocations(): Promise<
+    {
+      id: string;
+      name: string;
+      description: string;
+    }[]
+  > {
+    const locations = await this.locationModel.find().exec();
+    return locations.map((location) => ({
+      id: location.id,
+      name: location.name,
+      description: location.description,
+    }));
   }
 
-  getSingleLocation(id: string) {
+  getLocation(id: string) {
     const location = this.findLocation(id)[0];
     return { ...location };
   }
 
-  updateLocation(id: string, name: string, description: string) {
-    const [location, index] = this.findLocation(id);
-    const updatedLocation = { ...location };
-    if (name) {
-      updatedLocation.name = name;
-    }
-    if (description) {
-      updatedLocation.description = description;
-    }
-    this.locations[index] = updatedLocation;
+  async updateLocation(id: string, name: string, description: string) {
+    const location = await this.findLocation(id);
+    if (name) location.name = name;
+    if (description) location.description = description;
   }
 
-  deleteLocation(id: string) {
-    const index = this.findLocation(id)[1];
-    this.locations.splice(index, 1);
+  async deleteLocation(id: string): Promise<{ id: string }> {
+    const result = await this.locationModel
+      .deleteOne({
+        _id: id,
+      })
+      .exec();
+    if (result.deletedCount === 0) {
+      throw new NotFoundException('No location found');
+    }
+    return {
+      id,
+    };
   }
 
-  private findLocation(id: string): [Location, number] {
-    const locationIdx = this.locations.findIndex(
-      (location) => location.id === id,
-    );
-    const location = this.locations[locationIdx];
+  private async findLocation(id: string) {
+    const location = await this.locationModel
+      .findById(new mongoose.Types.ObjectId(id))
+      .exec();
     if (!location) {
-      throw new NotFoundException('Er kan geen locatie worden gevonden.');
+      throw new NotFoundException('No location found');
     }
-    return [location, locationIdx];
+    return location;
   }
 }

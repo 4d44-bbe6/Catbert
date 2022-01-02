@@ -29,7 +29,7 @@ function StackedBarChart() {
       chartConfig={{
         ...chartConfig,
       }}
-      width={Dimensions.get('window').width}
+      width={Dimensions.get('window').width - 20}
       height={220}
       style={chartStyle}
       yAxisSuffix="g"
