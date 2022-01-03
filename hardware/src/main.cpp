@@ -1,6 +1,7 @@
 // Include Libraries
 #include "Arduino.h"
 #include "HX711.h"
+#include "LiquidCrystal595.h"
 #include "Ethernet.h"
 #include "SPI.h"
 #include "PubSubClient.h"
@@ -19,6 +20,7 @@
 HX711 scale(SCALE_PIN_DAT, SCALE_PIN_CLK);
 EthernetClient ethClient;
 RFID rfid(RFID_PIN_SDA, RFID_PIN_RST);
+LiquidCrystal595 lcd(3, 2, 4);
 
 const int timeout = 10000;
 const int calibration_factor = 32600;
@@ -86,6 +88,9 @@ void setup()
 
     // RFID
     rfid.init();
+
+    // LCD
+    lcd.begin(16, 2); // 16 characters, 2 rows
 }
 
 void loop()
@@ -114,6 +119,12 @@ void loop()
         // client.publish("home/catbert/currentRDIF", String.toCharArray(rfidtag), BUFFER_SIZE);
         client.publish("home/catbert/currentRFID", rfid_buffer);
     }
+
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("Wow. 3 pins!");
+    lcd.setCursor(0, 1);
+    lcd.print("Fabulous");
 
     delay(100);
 }
