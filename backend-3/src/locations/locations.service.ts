@@ -1,13 +1,13 @@
 import * as mongoose from 'mongoose';
 import { Model } from 'mongoose';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Location } from './location.model';
 import { InjectModel } from '@nestjs/mongoose';
+import { Location } from './location.model';
 
 @Injectable()
 export class LocationsService {
   constructor(
-    @InjectModel('Scale') private readonly locationModel: Model<Location>,
+    @InjectModel('Location') private readonly locationModel: Model<Location>,
   ) {}
 
   async addLocation(name: string, description: string): Promise<string> {
@@ -39,10 +39,15 @@ export class LocationsService {
     return { ...location };
   }
 
-  async updateLocation(id: string, name: string, description: string) {
+  async updateLocation(
+    id: string,
+    name: string,
+    description: string,
+  ): Promise<Location> {
     const location = await this.findLocation(id);
     if (name) location.name = name;
     if (description) location.description = description;
+    return location.save();
   }
 
   async deleteLocation(id: string): Promise<{ id: string }> {

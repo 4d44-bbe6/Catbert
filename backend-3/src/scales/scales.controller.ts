@@ -8,7 +8,6 @@ import {
   Delete,
 } from '@nestjs/common';
 import { Scale } from './scale.model';
-
 import { ScalesService } from './scales.service';
 
 @Controller('scales')
