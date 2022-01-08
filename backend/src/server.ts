@@ -1,5 +1,11 @@
-import * as dotenv from 'dotenv';
 import App from './App';
-dotenv.config();
+import { PORT } from './config';
+import ScalesController from './scales/scales.controller';
+import LocationsController from './locations/locations.controller';
+import CatsController from './cats/cats.controller';
 
-new App().express;
+const app = new App(
+  [new ScalesController(), new LocationsController(), new CatsController()],
+  PORT,
+);
+app.listen();

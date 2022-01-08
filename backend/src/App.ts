@@ -1,35 +1,46 @@
 import * as express from 'express';
-import * as dotenv from 'dotenv';
 import * as mqqt from 'mqtt';
 import { Connection, connect, connection } from 'mongoose';
-import router from './routes/';
-import { Express } from 'express-serve-static-core';
+import bodyParser = require('body-parser');
 
-dotenv.config();
+import {
+  MONGODB_ATLAS_USER,
+  MONGODB_ATLAS_PASSWORD,
+  MQTT_SERVER,
+} from './config';
 
 class App {
-  public express: Express;
-  public db: Promise<Connection>;
-  constructor() {
-    this.express = express();
-    this.db = this.initDB();
-    this.run();
-    this.loadRoutes();
+  public app: express.Application;
+  public port: number;
+
+  constructor(controllers, port) {
+    this.app = express();
+    this.port = port;
+
+    this.initializeMiddlewares();
+    this.initializeControllers(controllers);
+    this.initDB();
     this.initMqqt();
   }
 
-  private run() {
-    this.express.listen(3000, () => {
-      return console.log('Server is running in port: ', 3000);
+  private initializeMiddlewares() {
+    this.app.use(bodyParser.json());
+  }
+
+  private initializeControllers(controllers) {
+    controllers.forEach((controller) => {
+      this.app.use('/', controller.router);
     });
   }
 
-  private loadRoutes(): void {
-    this.express.use('/', router);
+  public listen() {
+    this.app.listen(this.port, () => {
+      console.log(`App listening on the port ${this.port}`);
+    });
   }
 
   private async initDB(): Promise<Connection> {
-    const mongoDB = `mongodb+srv://${process.env.MONGODB_ATLAS_USER}:${process.env.MONGODB_ATLAS_PASSWORD}@cluster0.kk4in.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
+    const mongoDB = `mongodb+srv://${MONGODB_ATLAS_USER}:${MONGODB_ATLAS_PASSWORD}@cluster0.kk4in.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
     await connect(mongoDB);
     const db = connection;
     db.on('error', console.error.bind(console, 'MongoDB connection error: '));
@@ -37,7 +48,7 @@ class App {
   }
 
   private async initMqqt() {
-    const host = `192.168.178.10`;
+    const host = MQTT_SERVER;
     const port = `1883`;
     const connectUrl = `mqtt://${host}:${port}`;
     const clientId = `mqtt_${Math.random().toString(16).slice(3)}`;
@@ -48,15 +59,17 @@ class App {
       reconnectPeriod: 1000,
     });
 
-    const topic = 'home/catbert/currentWeight';
+    const topics = ['home/catbert/currentWeight', 'home/catbert/currentCat'];
     client.on('connect', () => {
       console.log('Connected with MQTT server');
-      client.subscribe([topic], () => {
-        console.log(`Subscribe to topic '${topic}`);
+      topics.forEach((topic) => {
+        client.subscribe(topic, () => {
+          console.log(`Subscribe to topic '${topic}`);
+        });
       });
 
-      client.on('message', (topic, payload) => {
-        console.log('Received message', topic, payload.toString());
+      client.on('message', (topics, payload) => {
+        console.log('Received message', topics, payload.toString());
       });
     });
   }
