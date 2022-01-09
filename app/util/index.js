@@ -1,10 +1,11 @@
-export async function getScales() {
+export async function getEntity(entity) {
   try {
-    const res = await fetch('http://localhost:3000/scales/', {
+    const result = await fetch(`http://localhost:3000/${entity}`, {
       method: 'GET',
     });
-    const scales = await res.json();
-    return scales;
+    const data = await result.json();
+    console.log(data);
+    return data;
   } catch (err) {
     return err;
   }

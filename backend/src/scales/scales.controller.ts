@@ -1,8 +1,8 @@
 import { Request, Response, Router } from 'express';
-import * as mongoose from 'mongoose';
 import Scale from './scale.interface';
 import scaleModel from './scales.model';
 import locationModel from '../locations/locations.model';
+import catModel from '../cats/cats.model';
 
 class ScalesController {
   public path = '/scales';
@@ -36,7 +36,7 @@ class ScalesController {
 
   update = (request: Request, response: Response) => {
     const id = request.params.id;
-    const { name, description, location } = request.body;
+    const { name, description, location, cats } = request.body;
 
     this.scale.findById(id).then((scale) => {
       if (name) scale.name = name;
@@ -50,35 +50,44 @@ class ScalesController {
         });
       }
 
+      if (cats) {
+        scale.cats = cats; // array met katten
+        scale.cats.forEach((cat) => {
+          catModel.findById(cat).then((cat) => {
+            cat.scales = [...cat.scales, scale._id];
+            cat.save();
+          });
+        });
+      }
+
       scale.save().then((updatedScale) => {
         response.send(updatedScale);
       });
     });
   };
 
-  remove = async (request: Request, response: Response) => {
+  remove = (request: Request, response: Response) => {
     const { id } = request.params;
 
-    const foundScale = await this.scale.findByIdAndDelete(id);
-    locationModel.findById(foundScale.location).then((foundLocation) => {
-      foundLocation.scales = foundLocation.scales.filter(
-        (item) => !foundScale._id.equals(item),
-      );
-      foundLocation.save().then((location) => {
-        response.send(location);
+    this.scale.findByIdAndDelete(id).then((foundScale) => {
+      locationModel.findById(foundScale.location).then((foundLocation) => {
+        foundLocation.scales = foundLocation.scales.filter(
+          (item) => !foundScale._id.equals(item),
+        );
+        foundLocation.save().then((location) => {
+          response.send(location);
+        });
+      });
+
+      foundScale.cats.forEach((cat) => {
+        catModel.findById(cat).then((foundCat) => {
+          foundCat.scales = foundCat.scales.filter(
+            (item) => !foundCat._id.equals(item),
+          );
+          foundCat.save();
+        });
       });
     });
-
-    // const filterLocation = [];
-    // foundLocation.scales.forEach((scale) => {
-    //   if (foundScale._id.equals(scale)) {
-    //     console.log(foundScale._id, 'verwijderen');
-    //   } else {
-    //     filterLocation.push(scale);
-    //   }
-    // });
-
-    // console.log(filterLocation);
   };
 
   create = (request: Request, response: Response) => {

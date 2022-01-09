@@ -1,16 +1,37 @@
 import * as mqtt from 'mqtt';
-import { MQTT_SERVER } from './config';
 
 class Mqtt {
-  constructor() {
+  public server: string;
+  public topics: Array<string>;
+
+  constructor(server: string, topics: Array<string>) {
+    this.server = server;
+    this.topics = topics;
     this.initializeBroker();
   }
 
   public initializeBroker(): void {
-    const client = mqtt.connect(`mqtt://${MQTT_SERVER}`);
+    const clientId = `mqtt_${Math.random().toString(16).slice(3)}`;
+    const client = mqtt.connect(`mqtt://${this.server}`, {
+      clientId,
+      clean: true,
+      connectTimeout: 4000,
+      reconnectPeriod: 1000,
+    });
     client.on('connect', () => {
-      client.subscribe(['home/Catbert/currentWeight'], null, (res) => {
-        console.log(res);
+      console.log('Connected with MQTT server');
+      this.topics.forEach((topic) => {
+        client.subscribe(topic, () => {
+          console.log(`Subscribed to topic 'home/catbert/${topic}`);
+        });
+      });
+
+      client.on('message', (topics, payload) => {
+        console.log(
+          'Received message from topic: ',
+          topics,
+          payload.toString(),
+        );
       });
     });
   }

@@ -1,7 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import RootNavigation from '../../components/navigation/root-navigation';
 import TabBar from '../../components/navigation/tab-bar';
-
 import AppBar from '../../components/app-bar';
 import { config } from '../../config';
 import { mapComponent } from '../../config/mapper';
