@@ -1,6 +1,5 @@
-interface ICat {
-  name: string;
-  lastUpdated: Date;
+import IEntity from '../entity/entity.interface';
+interface ICat extends IEntity {
   scales: Array<string>;
 }
 

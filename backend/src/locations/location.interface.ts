@@ -1,6 +1,5 @@
-interface ILocation {
-  name: string;
-  lastUpdated: Date;
+import IEntity from '../entity/entity.interface';
+interface ILocation extends IEntity {
   scales: Array<string>;
 }
 

@@ -1,7 +1,7 @@
 import * as mqtt from 'mqtt';
 import { MQTT_SERVER } from './config';
 
-class Mqqt {
+class Mqtt {
   constructor() {
     this.initializeBroker();
   }
@@ -16,4 +16,4 @@ class Mqqt {
   }
 }
 
-export default Mqqt;
+export default Mqtt;

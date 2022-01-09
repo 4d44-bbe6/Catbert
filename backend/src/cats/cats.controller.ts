@@ -15,9 +15,9 @@ class CatsController {
   public initializeRoutes() {
     this.router.post(this.path, this.create);
     this.router.get(this.path, this.getAll);
-    this.router.get(`${this.path}/:id`, this.getCatById);
-    this.router.patch(`${this.path}/:id`, this.updateCat);
-    this.router.delete(`${this.path}/:id`, this.removeCat);
+    this.router.get(`${this.path}/:id`, this.getById);
+    this.router.patch(`${this.path}/:id`, this.update);
+    this.router.delete(`${this.path}/:id`, this.remove);
   }
 
   getAll = (request: Request, response: Response) => {
@@ -26,14 +26,14 @@ class CatsController {
     });
   };
 
-  getCatById = (request: Request, response: Response) => {
+  getById = (request: Request, response: Response) => {
     const id = request.params.id;
     this.cat.findById(id).then((cat) => {
       response.send(cat);
     });
   };
 
-  updateCat = (request: Request, response: Response) => {
+  update = (request: Request, response: Response) => {
     const id = request.params.id;
     const { name } = request.body;
 
@@ -45,7 +45,7 @@ class CatsController {
     });
   };
 
-  removeCat = async (request: Request, response: Response) => {
+  remove = async (request: Request, response: Response) => {
     const id = request.params.id;
 
     this.cat.findByIdAndDelete(id).then((successResponse) => {

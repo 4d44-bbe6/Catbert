@@ -1,5 +1,5 @@
 import { Request, Response, Router } from 'express';
-
+import * as mongoose from 'mongoose';
 import Scale from './scale.interface';
 import scaleModel from './scales.model';
 import locationModel from '../locations/locations.model';
@@ -8,6 +8,7 @@ class ScalesController {
   public path = '/scales';
   public router = Router();
   private scale = scaleModel;
+
   constructor() {
     this.initializeRoutes();
   }
@@ -15,9 +16,9 @@ class ScalesController {
   public initializeRoutes() {
     this.router.post(this.path, this.create);
     this.router.get(this.path, this.getAll);
-    this.router.get(`${this.path}/:id`, this.getScaleById);
-    this.router.patch(`${this.path}/:id`, this.updateScale);
-    this.router.delete(`${this.path}/:id`, this.removeScale);
+    this.router.get(`${this.path}/:id`, this.getById);
+    this.router.patch(`${this.path}/:id`, this.update);
+    this.router.delete(`${this.path}/:id`, this.remove);
   }
 
   getAll = (request: Request, response: Response) => {
@@ -26,14 +27,14 @@ class ScalesController {
     });
   };
 
-  getScaleById = (request: Request, response: Response) => {
+  getById = (request: Request, response: Response) => {
     const id = request.params.id;
     this.scale.findById(id).then((scale) => {
       response.send(scale);
     });
   };
 
-  updateScale = (request: Request, response: Response) => {
+  update = (request: Request, response: Response) => {
     const id = request.params.id;
     const { name, description, location } = request.body;
 
@@ -55,29 +56,29 @@ class ScalesController {
     });
   };
 
-  removeScale = (request: Request, response: Response) => {
+  remove = async (request: Request, response: Response) => {
     const { id } = request.params;
 
-    this.scale.findById(id).then((scale) => {
-      console.log('found scale:', scale);
-      return scale.remove((err) => {
-        if (!err) {
-          locationModel.findByIdAndUpdate(scale.location, {
-            _id: {
-              $in: scale.location,
-            },
-          });
-        }
+    const foundScale = await this.scale.findByIdAndDelete(id);
+    locationModel.findById(foundScale.location).then((foundLocation) => {
+      foundLocation.scales = foundLocation.scales.filter(
+        (item) => !foundScale._id.equals(item),
+      );
+      foundLocation.save().then((location) => {
+        response.send(location);
       });
     });
 
-    this.scale.findByIdAndDelete(id).then((successResponse) => {
-      if (successResponse) {
-        response.sendStatus(200);
-      } else {
-        response.sendStatus(404);
-      }
-    });
+    // const filterLocation = [];
+    // foundLocation.scales.forEach((scale) => {
+    //   if (foundScale._id.equals(scale)) {
+    //     console.log(foundScale._id, 'verwijderen');
+    //   } else {
+    //     filterLocation.push(scale);
+    //   }
+    // });
+
+    // console.log(filterLocation);
   };
 
   create = (request: Request, response: Response) => {

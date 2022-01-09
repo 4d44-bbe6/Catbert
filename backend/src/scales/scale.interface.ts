@@ -1,9 +1,8 @@
-interface IScale {
-  name: string;
+import IEntity from '../entity/entity.interface';
+interface IScale extends IEntity {
   description: string;
-  location: Array<string>;
+  location: string;
   cats: Array<string>;
-  lastUpdated: Date;
 }
 
 export default IScale;

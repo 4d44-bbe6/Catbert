@@ -15,9 +15,9 @@ class LocationsController {
   public initializeRoutes() {
     this.router.post(this.path, this.create);
     this.router.get(this.path, this.getAll);
-    this.router.get(`${this.path}/:id`, this.getScaleById);
-    this.router.patch(`${this.path}/:id`, this.updateScale);
-    this.router.delete(`${this.path}/:id`, this.removeScale);
+    this.router.get(`${this.path}/:id`, this.getById);
+    this.router.patch(`${this.path}/:id`, this.update);
+    this.router.delete(`${this.path}/:id`, this.remove);
   }
 
   getAll = (request: Request, response: Response) => {
@@ -26,19 +26,20 @@ class LocationsController {
     });
   };
 
-  getScaleById = (request: Request, response: Response) => {
+  getById = (request: Request, response: Response) => {
     const id = request.params.id;
     this.location.findById(id).then((location) => {
       response.send(location);
     });
   };
 
-  updateScale = (request: Request, response: Response) => {
+  update = (request: Request, response: Response) => {
     const id = request.params.id;
-    const { name } = request.body;
+    const { name, scales } = request.body;
 
     this.location.findById(id).then((location) => {
       if (name) location.name = name;
+      if (scales) location.scales = scales;
 
       location.save().then((updatedLocation) => {
         response.send(updatedLocation);
@@ -46,7 +47,7 @@ class LocationsController {
     });
   };
 
-  removeScale = async (request: Request, response: Response) => {
+  remove = async (request: Request, response: Response) => {
     const id = request.params.id;
 
     this.location.findByIdAndDelete(id).then((successResponse) => {

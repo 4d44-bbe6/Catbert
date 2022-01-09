@@ -1,5 +1,5 @@
 import * as express from 'express';
-import * as mqqt from 'mqtt';
+import * as mqtt from 'mqtt';
 import { Connection, connect, connection } from 'mongoose';
 import bodyParser = require('body-parser');
 
@@ -20,7 +20,7 @@ class App {
     this.initializeMiddlewares();
     this.initializeControllers(controllers);
     this.initDB();
-    this.initMqqt();
+    this.initMqtt();
   }
 
   private initializeMiddlewares() {
@@ -47,12 +47,12 @@ class App {
     return db;
   }
 
-  private async initMqqt() {
+  private async initMqtt() {
     const host = MQTT_SERVER;
     const port = `1883`;
     const connectUrl = `mqtt://${host}:${port}`;
     const clientId = `mqtt_${Math.random().toString(16).slice(3)}`;
-    const client = mqqt.connect(connectUrl, {
+    const client = mqtt.connect(connectUrl, {
       clientId,
       clean: true,
       connectTimeout: 4000,
