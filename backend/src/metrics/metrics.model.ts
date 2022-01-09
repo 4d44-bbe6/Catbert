@@ -4,6 +4,10 @@ import IMetric from './metric.interface';
 const metricSchema = new Schema({
   type: String,
   value: Schema.Types.Mixed,
+  scale: {
+    ref: 'Scale',
+    type: Schema.Types.ObjectId,
+  },
   timestamp: Date,
 });
 

@@ -3,6 +3,12 @@ import ILocation from './location.interface';
 
 const locationSchema = new Schema({
   name: String,
+  scales: [
+    {
+      ref: 'Scale',
+      type: Schema.Types.ObjectId,
+    },
+  ],
   lastUpdated: Date,
 });
 

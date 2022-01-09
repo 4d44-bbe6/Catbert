@@ -1,7 +1,8 @@
 interface IScale {
   name: string;
   description: string;
-  location: string;
+  location: Array<string>;
+  cats: Array<string>;
   lastUpdated: Date;
 }
 

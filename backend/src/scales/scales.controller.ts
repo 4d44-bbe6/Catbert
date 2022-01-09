@@ -2,12 +2,12 @@ import { Request, Response, Router } from 'express';
 
 import Scale from './scale.interface';
 import scaleModel from './scales.model';
+import locationModel from '../locations/locations.model';
 
 class ScalesController {
   public path = '/scales';
   public router = Router();
   private scale = scaleModel;
-
   constructor() {
     this.initializeRoutes();
   }
@@ -40,34 +40,65 @@ class ScalesController {
     this.scale.findById(id).then((scale) => {
       if (name) scale.name = name;
       if (description) scale.description = description;
-      if (location) scale.location = location;
+
+      if (location) {
+        scale.location = location;
+        locationModel.findById(location).then((location) => {
+          location.scales = [...location.scales, scale._id];
+          location.save();
+        });
+      }
+
       scale.save().then((updatedScale) => {
         response.send(updatedScale);
       });
     });
   };
 
-  removeScale = async (request: Request, response: Response) => {
-    const id = request.params.id;
+  removeScale = (request: Request, response: Response) => {
+    const { id } = request.params;
+
+    this.scale.findById(id).then((scale) => {
+      console.log('found scale:', scale);
+      return scale.remove((err) => {
+        if (!err) {
+          locationModel.findByIdAndUpdate(scale.location, {
+            _id: {
+              $in: scale.location,
+            },
+          });
+        }
+      });
+    });
 
     this.scale.findByIdAndDelete(id).then((successResponse) => {
       if (successResponse) {
-        response.send(200);
+        response.sendStatus(200);
       } else {
-        response.send(404);
+        response.sendStatus(404);
       }
     });
   };
 
   create = (request: Request, response: Response) => {
-    const scale: Scale = {
+    const scaleData: Scale = {
       lastUpdated: Date(),
+      location: request.body.location,
       ...request.body,
     };
+    const createdScale = new this.scale({
+      ...scaleData,
+    });
 
-    const createdScale = new scaleModel(scale);
+    locationModel.findById(request.body.location).then((location) => {
+      location.scales = [...location.scales, createdScale._id];
+      location.save();
+    });
+
     createdScale.save().then((savedScale) => {
-      response.send(savedScale);
+      savedScale.populate('location').then((savedScale) => {
+        response.send(savedScale);
+      });
     });
   };
 }

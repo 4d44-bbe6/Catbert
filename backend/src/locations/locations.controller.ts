@@ -64,10 +64,11 @@ class LocationsController {
       ...request.body,
     };
 
-    const createdScale = new locationModel(location);
-    createdScale.save().then((savedScale) => {
-      response.send(savedScale);
+    const createdLocation = new this.location({
+      ...location,
     });
+    createdLocation.save();
+    response.send(createdLocation);
   };
 }
 

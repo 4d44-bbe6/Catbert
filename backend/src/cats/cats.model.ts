@@ -3,6 +3,12 @@ import ICat from './cat.interface';
 
 const catSchema = new Schema({
   name: String,
+  scales: [
+    {
+      ref: 'Scale',
+      type: Schema.Types.ObjectId,
+    },
+  ],
   lastUpdated: Date,
 });
 
