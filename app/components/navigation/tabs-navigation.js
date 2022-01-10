@@ -9,6 +9,9 @@ function Tabs({
   return (
     <Tab.Navigator
       initialRouteName={initialRouteName}
+      screenOptions={{
+        headerShown: false,
+      }}
       tabBar={(props) => <TabBarComponent {...props} />}
     >
       {routes.map((route) => (

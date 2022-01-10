@@ -4,7 +4,7 @@ export async function getEntity(entity) {
       method: 'GET',
     });
     const data = await result.json();
-    console.log(data);
+
     return data;
   } catch (err) {
     return err;

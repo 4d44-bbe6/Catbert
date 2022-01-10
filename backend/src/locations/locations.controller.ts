@@ -21,6 +21,7 @@ class LocationsController {
   }
 
   getAll = (request: Request, response: Response) => {
+    console.log(request);
     this.location.find().then((locations) => {
       response.send(locations);
     });

@@ -1,20 +1,23 @@
 /* eslint-disable no-underscore-dangle */
 import { useEffect, useState } from 'react';
-import {
-  Text, View, ScrollView, Pressable, Button,
-} from 'react-native';
+import { View, ScrollView, Pressable } from 'react-native';
+import { AntDesign } from '@expo/vector-icons';
 import styled from 'styled-components/native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LineChart from '../../components/charts/LineChart';
 import PieChart from '../../components/charts/PieChart';
 
 import { getEntity } from '../../util';
+import BowlAddScreen from '../bowl-add-screen';
 
-function BowlsScreen() {
+const Stack = createNativeStackNavigator();
+
+function Bowls({ navigation }) {
   const [scales, setScales] = useState([]);
   const [locations, setLocations] = useState([]);
   const [cats, setCats] = useState([]);
   const [showScale, toggleScale] = useState(-1);
-  const [showNewScale, toggleNewScale] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -49,27 +52,50 @@ function BowlsScreen() {
 
       ))}
 
-      <Button title="Voer voerbak toe" onPress={() => toggleNewScale(!showNewScale)} />
-      {showNewScale && (
-        <View>
-          <Text>Naam</Text>
-          <Text>Voeg een  lokatie toe:</Text>
-          {locations.length > 0 && locations.map((location) => (
-            <View key={locations._id}>
-              <Text>{location.name}</Text>
-            </View>
-          ))}
-          <Text>Voeg één of meerdere katten toe:</Text>
-        </View>
-      )}
-
     </ScrollView>
   );
 
   return (
-    <View>
+    <ScrollView>
       {renderBowls()}
-    </View>
+      <StyledHeaderAdd>
+        {locations?.length > 0 && (
+        <Pressable onPress={() => {
+          navigation.push('addBowl', {
+            locations,
+          });
+        }}
+        >
+          <AntDesign name="pluscircle" size={24} color="orange" />
+        </Pressable>
+        )}
+
+      </StyledHeaderAdd>
+    </ScrollView>
+  );
+}
+
+function BowlsScreen() {
+  return (
+    <NavigationContainer independent>
+      <Stack.Navigator
+        screenOptions={{
+          // headerShown: true,
+        }}
+      >
+        <Stack.Screen
+          name="Bowls"
+          component={Bowls}
+        />
+        <Stack.Screen
+          name="addBowl"
+          options={{
+            title: 'Toevoegen voerbak',
+          }}
+          component={BowlAddScreen}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
@@ -80,4 +106,12 @@ const StyledHeader = styled.Text`
   padding: 5px;
   border-radius: 5px;
   background-color: #cFcFcF;
+`;
+
+const StyledHeaderAdd = styled.View`
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  margin-top: 15px;
+  margin-right: 15px;
 `;
