@@ -1,6 +1,8 @@
 /* eslint-disable no-underscore-dangle */
 import { useEffect, useState } from 'react';
-import { View, ScrollView, Pressable } from 'react-native';
+import {
+  View, ScrollView, Pressable,
+} from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import styled from 'styled-components/native';
 import { NavigationContainer } from '@react-navigation/native';
@@ -19,29 +21,28 @@ function Bowls({ navigation }) {
   const [cats, setCats] = useState([]);
   const [showScale, toggleScale] = useState(-1);
 
+  const fetchData = async () => {
+    const dataScales = await getEntity('scales');
+    setScales(dataScales);
+
+    const dataLocations = await getEntity('locations');
+    setLocations(dataLocations);
+
+    const dataCats = await getEntity('cats');
+    setCats(dataCats);
+  };
+
   useEffect(() => {
-    async function fetchData() {
-      const dataScales = await getEntity('scales');
-      setScales(dataScales);
-
-      const dataLocations = await getEntity('locations');
-      setLocations(dataLocations);
-
-      const dataCats = await getEntity('cats');
-      setCats(dataCats);
-    }
-
     fetchData();
   }, []);
+
   const renderBowls = () => (
     <ScrollView>
       {scales.length > 0 && scales.map((scale, index) => (
         <View key={scale._id}>
-          <View key={scale._id}>
-            <Pressable onPress={() => (showScale === index ? toggleScale(-1) : toggleScale(index))}>
-              <StyledHeader>{scale.name}</StyledHeader>
-            </Pressable>
-          </View>
+          <Pressable onPress={() => (showScale === index ? toggleScale(-1) : toggleScale(index))}>
+            <StyledHeader>{scale.name}</StyledHeader>
+          </Pressable>
           {index === showScale && (
           <>
             <LineChart scale={scale._id} />
@@ -49,7 +50,6 @@ function Bowls({ navigation }) {
           </>
           )}
         </View>
-
       ))}
 
     </ScrollView>
@@ -59,16 +59,16 @@ function Bowls({ navigation }) {
     <ScrollView>
       {renderBowls()}
       <StyledHeaderAdd>
-        {locations?.length > 0 && (
+
         <Pressable onPress={() => {
           navigation.push('addBowl', {
             locations,
+            cats,
           });
         }}
         >
           <AntDesign name="pluscircle" size={24} color="orange" />
         </Pressable>
-        )}
 
       </StyledHeaderAdd>
     </ScrollView>
@@ -78,11 +78,7 @@ function Bowls({ navigation }) {
 function BowlsScreen() {
   return (
     <NavigationContainer independent>
-      <Stack.Navigator
-        screenOptions={{
-          // headerShown: true,
-        }}
-      >
+      <Stack.Navigator>
         <Stack.Screen
           name="Bowls"
           component={Bowls}

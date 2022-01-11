@@ -13,7 +13,7 @@
     "navigation": ["tabs"]
   },
   {
-    "component": "BowlsContainer",
+    "component": "CatsContainer",
     "icon": "cat",
     "name": "Cats",
     "navigation": ["tabs"]

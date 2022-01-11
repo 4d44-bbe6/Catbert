@@ -91,23 +91,38 @@ class ScalesController {
   };
 
   create = (request: Request, response: Response) => {
+    console.log(request.body);
+    const { location, cats } = request.body;
     const scaleData: Scale = {
       lastUpdated: Date(),
-      location: request.body.location,
+      location: location,
+      cats: cats,
       ...request.body,
     };
+
     const createdScale = new this.scale({
       ...scaleData,
     });
 
-    locationModel.findById(request.body.location).then((location) => {
+    locationModel.findById(location).then((location) => {
       location.scales = [...location.scales, createdScale._id];
       location.save();
     });
 
+    if (cats.length > 0) {
+      cats.forEach((cat) => {
+        catModel.findById(cat).then((cat) => {
+          cat.scales = [...cat.scales, createdScale._id];
+          cat.save();
+        });
+      });
+    }
+
     createdScale.save().then((savedScale) => {
       savedScale.populate('location').then((savedScale) => {
-        response.send(savedScale);
+        savedScale.populate('cats').then((savedScale) => {
+          response.send(savedScale);
+        });
       });
     });
   };

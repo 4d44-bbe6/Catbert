@@ -1,72 +1,109 @@
 /* eslint-disable no-underscore-dangle */
-import { useState, useEffect } from 'react';
-import styled from 'styled-components';
+import { useState } from 'react';
 import { Text } from 'react-native';
+import styled from 'styled-components';
+import DropDownPicker from 'react-native-dropdown-picker';
 import { Button } from 'react-native-paper';
 
-function BowlAddScreen() {
-  const [locations, setLocations] = useState([]);
-  const [selectedLocation, selectLocation] = useState();
+function BowlAddScreen({ route }) {
+  const { locations, cats } = route.params;
+  console.log(cats);
+
+  // Dropdown pickers
+  const [pickerLocationOpen, setPickerLocationOpen] = useState(false);
+  const [pickerLocationValue, setPickerLocationValue] = useState();
+  const [pickerCatsOpen, setPickerCatsOpen] = useState(false);
+  const [pickerCatsValue, setPickerCatsValue] = useState([]);
+
+  const [newLocation, setNewLocation] = useState();
   const [showAddNewLocation, toggleAddNewLocation] = useState(false);
-  const [newLocation, setNewLocation] = useState(null);
 
-  /**
-   * Retrieve all locations from backend
-   */
-  const getLocations = async () => {
-    const result = await fetch('http://localhost:3000/locations/', {
-      method: 'GET',
-    });
-    const locationsData = await result.json();
-    setLocations(locationsData);
-  };
+  const [name, setName] = useState();
 
-  useEffect(() => {
-    getLocations();
-  }, []);
-
-  /**
-   * Add Location to backend
-   * @param {string} location
-   */
-  const addLocation = async (location) => {
-    await fetch('http://localhost:3000/locations/', {
+  const addScale = async () => {
+    console.log(name);
+    console.log(pickerLocationValue);
+    console.log(pickerCatsValue);
+    const result = await fetch('http://localhost:3000/scales/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        // 'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: JSON.stringify({
-        name: location,
+        name,
+        location: newLocation || pickerLocationValue,
+        cats:
+          pickerCatsValue,
       }),
     });
-    toggleAddNewLocation(false);
+
+    console.log(result);
   };
 
   return (
     <StyledContainer>
+      <StyledTextInput
+        placeholder="Hoe wil je de voerbak noemen?"
+        value={name}
+        onChangeText={setName}
+        multiline={false}
+        keyboardType="default"
+        returnKeyType="next"
+      />
       <Text>Waar staat de voerbak?</Text>
-      {locations.length > 0 && locations.map((location, index) => (
-        // eslint-disable-next-line react/no-array-index-key
-        <StyledButtonContainer key={index}>
-          <Button
-            color={selectedLocation === location._id ? 'green' : 'orange'}
-            mode="contained"
-            onPress={() => selectLocation(location._id)}
-          >
-            {location.name}
-          </Button>
-        </StyledButtonContainer>
-      ))}
+
+      {locations.length > 0 && (
+      <DropDownPicker
+        open={pickerLocationOpen}
+        value={pickerLocationValue}
+        items={locations}
+        schema={{
+          label: 'name',
+          value: '_id',
+        }}
+        setOpen={setPickerLocationOpen}
+        setValue={setPickerLocationValue}
+        setItems={setPickerLocationValue}
+        zIndex={2000}
+        zIndexInverse={2000}
+      />
+      )}
+
       {!showAddNewLocation ? (
         <Button onPress={() => toggleAddNewLocation(!showAddNewLocation)}>
           Of voeg een nieuwe lokatie toe..
         </Button>
       ) : (
-        <>
-          <StyledTextInput placeholder="Voeg een nieuwe lokatie toe" value={newLocation} onChangeText={setNewLocation} />
-          <Button onPress={() => addLocation(newLocation)}>Voeg toe</Button>
-        </>
+        <StyledTextInput
+          placeholder="Voeg een nieuwe lokatie toe"
+          value={newLocation}
+          onChangeText={setNewLocation}
+          multiline={false}
+          keyboardType="default"
+          returnKeyType="next"
+        />
       )}
+
+      <Text>Welke katten eten uit deze voerbak?</Text>
+      <DropDownPicker
+        open={pickerCatsOpen}
+        value={pickerCatsValue}
+        items={cats}
+        schema={{
+          label: 'name',
+          value: '_id',
+        }}
+        setOpen={setPickerCatsOpen}
+        setValue={setPickerCatsValue}
+        setItems={setPickerCatsValue}
+        multiple
+        min={0}
+        max={10}
+        zIndex={1000}
+        zIndexInverse={1000}
+      />
+      <Button onPress={() => addScale()}>Voeg een voerbak toe toe</Button>
 
     </StyledContainer>
   );
@@ -80,10 +117,6 @@ const StyledContainer = styled.View`
   justify-content: center;
   flex-direction: column;
   align-items: center;
-`;
-
-const StyledButtonContainer = styled.View`
-  margin: 10px 60px;
 `;
 
 const StyledTextInput = styled.TextInput`
