@@ -7,7 +7,6 @@ import { Button } from 'react-native-paper';
 
 function BowlAddScreen({ route }) {
   const { locations, cats } = route.params;
-  console.log(cats);
 
   // Dropdown pickers
   const [pickerLocationOpen, setPickerLocationOpen] = useState(false);
@@ -19,16 +18,13 @@ function BowlAddScreen({ route }) {
   const [showAddNewLocation, toggleAddNewLocation] = useState(false);
 
   const [name, setName] = useState();
+  const [addedScale, setAddedScale] = useState(false);
 
   const addScale = async () => {
-    console.log(name);
-    console.log(pickerLocationValue);
-    console.log(pickerCatsValue);
-    const result = await fetch('http://localhost:3000/scales/', {
+    await fetch('http://localhost:3000/scales/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        // 'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: JSON.stringify({
         name,
@@ -37,8 +33,7 @@ function BowlAddScreen({ route }) {
           pickerCatsValue,
       }),
     });
-
-    console.log(result);
+    setAddedScale(true);
   };
 
   return (
@@ -103,8 +98,9 @@ function BowlAddScreen({ route }) {
         zIndex={1000}
         zIndexInverse={1000}
       />
-      <Button onPress={() => addScale()}>Voeg een voerbak toe toe</Button>
-
+      {addedScale !== true
+        ? <Button onPress={() => addScale()}>Voeg een voerbak toe toe</Button>
+        : <Text>Je voerbak is toegevoegd.</Text>}
     </StyledContainer>
   );
 }
