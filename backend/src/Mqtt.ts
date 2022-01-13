@@ -3,6 +3,7 @@ import * as mqtt from 'mqtt';
 class Mqtt {
   public server: string;
   public topics: Array<string>;
+  public client: mqtt.MqttClient;
 
   constructor(server: string, topics: Array<string>) {
     this.server = server;
@@ -12,27 +13,31 @@ class Mqtt {
 
   public initializeBroker(): void {
     const clientId = `mqtt_${Math.random().toString(16).slice(3)}`;
-    const client = mqtt.connect(`mqtt://${this.server}`, {
+    this.client = mqtt.connect(`mqtt://${this.server}`, {
       clientId,
       clean: true,
       connectTimeout: 4000,
       reconnectPeriod: 1000,
     });
-    client.on('connect', () => {
+    this.client.on('connect', () => {
       console.log('Connected with MQTT server');
       this.topics.forEach((topic) => {
-        client.subscribe(topic, () => {
-          console.log(`Subscribed to topic 'home/catbert/${topic}`);
-        });
+        this.subscribeToTopic(topic);
       });
+    });
+  }
 
-      client.on('message', (topics, payload) => {
-        console.log(
-          'Received message from topic: ',
-          topics,
-          payload.toString(),
-        );
-      });
+  public sendComand(command: string): void {
+    console.log(command);
+  }
+
+  public subscribeToTopic(topic: string): void {
+    this.client.subscribe(topic, () => {
+      console.log(`Subscribed to topic 'home/catbert/${topic}`);
+    });
+
+    this.client.on('message', (topic, payload) => {
+      console.log('Received message from topic: ', topic, payload.toString());
     });
   }
 }

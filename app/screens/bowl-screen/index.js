@@ -1,7 +1,7 @@
 import {
   SafeAreaView, Dimensions, Text, Button,
 } from 'react-native';
-import { LineChart, BarChart, StackedBarChart } from 'react-native-chart-kit';
+import { StackedBarChart } from 'react-native-chart-kit';
 import styled from 'styled-components';
 
 function BowlScreen({ bowl }) {

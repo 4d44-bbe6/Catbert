@@ -1,13 +1,7 @@
 [
   {
-    "component": "HomeScreenContainer",
-    "defaultTabs": true,
-    "icon": "home",
-    "name": "Home",
-    "navigation": ["tabs"]
-  },
-  {
     "component": "BowlsContainer",
+    "defaultTabs": true,
     "icon": "bowl",
     "name": "Bowls",
     "navigation": ["tabs"]
@@ -19,9 +13,9 @@
     "navigation": ["tabs"]
   },
   {
-    "component": "BowlsContainer",
+    "component": "InfoContainer",
     "icon": "information",
     "name": "About",
     "navigation": ["tabs"]
-  }
+  } 
 ]

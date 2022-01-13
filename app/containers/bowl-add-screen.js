@@ -1,7 +1,7 @@
 import BowlAddScreen from '../screens/bowl-add-screen';
 
-function BowlAddContainer({ locations }) {
-  return <BowlAddScreen locations={locations} />;
+function BowlAddContainer({ navigation }) {
+  return <BowlAddScreen navigation={navigation} />;
 }
 
 export default BowlAddContainer;

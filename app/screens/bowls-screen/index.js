@@ -4,7 +4,6 @@ import {
   View, ScrollView, Pressable,
 } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
-import styled from 'styled-components/native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LineChart from '../../components/charts/LineChart';
@@ -12,21 +11,20 @@ import PieChart from '../../components/charts/PieChart';
 
 import { getEntity } from '../../util';
 import BowlAddScreen from '../bowl-add-screen';
+import BowlSupplyScreen from '../bowl-supply-screen';
+import Item from '../../components/Item';
+import { StyledAdd } from '../../styles';
 
 const Stack = createNativeStackNavigator();
 
 function Bowls({ navigation }) {
   const [scales, setScales] = useState([]);
-  const [locations, setLocations] = useState([]);
   const [cats, setCats] = useState([]);
   const [showScale, toggleScale] = useState(-1);
 
   const fetchData = async () => {
     const dataScales = await getEntity('scales');
     setScales(dataScales);
-
-    const dataLocations = await getEntity('locations');
-    setLocations(dataLocations);
 
     const dataCats = await getEntity('cats');
     setCats(dataCats);
@@ -41,7 +39,13 @@ function Bowls({ navigation }) {
       {scales.length > 0 && scales.map((scale, index) => (
         <View key={scale._id}>
           <Pressable onPress={() => (showScale === index ? toggleScale(-1) : toggleScale(index))}>
-            <StyledHeader>{scale.name}</StyledHeader>
+            <Item
+              name={scale.name}
+              status="Huidig gewicht: 193g"
+              icon={{
+                name: 'bowl',
+              }}
+            />
           </Pressable>
           {index === showScale && (
           <>
@@ -58,19 +62,16 @@ function Bowls({ navigation }) {
   return (
     <ScrollView>
       {renderBowls()}
-      <StyledHeaderAdd>
-
+      <StyledAdd>
         <Pressable onPress={() => {
           navigation.push('addBowl', {
-            locations,
             cats,
           });
         }}
         >
-          <AntDesign name="pluscircle" size={24} color="orange" />
+          <AntDesign name="pluscircle" size={24} color="green" />
         </Pressable>
-
-      </StyledHeaderAdd>
+      </StyledAdd>
     </ScrollView>
   );
 }
@@ -82,6 +83,9 @@ function BowlsScreen() {
         <Stack.Screen
           name="Bowls"
           component={Bowls}
+          options={{
+            title: 'Overzicht voerbakken',
+          }}
         />
         <Stack.Screen
           name="addBowl"
@@ -90,24 +94,16 @@ function BowlsScreen() {
           }}
           component={BowlAddScreen}
         />
+        <Stack.Screen
+          name="bowlSupply"
+          options={{
+            title: 'Huidige voorraad kattenvoer',
+          }}
+          component={BowlSupplyScreen}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
 
 export default BowlsScreen;
-
-const StyledHeader = styled.Text`
-  margin: 5px 15px;
-  padding: 5px;
-  border-radius: 5px;
-  background-color: #cFcFcF;
-`;
-
-const StyledHeaderAdd = styled.View`
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  margin-top: 15px;
-  margin-right: 15px;
-`;

@@ -17,10 +17,11 @@
 #define RFID_PIN_SDA 5
 
 // object initialization
-HX711 scale(SCALE_PIN_DAT, SCALE_PIN_CLK);
 EthernetClient ethClient;
 RFID rfid(RFID_PIN_SDA, RFID_PIN_RST);
 LiquidCrystal595 lcd(7, 8, 9);
+
+HX711 scale(SCALE_PIN_DAT, SCALE_PIN_CLK);
 
 const int timeout = 10000;
 const int calibration_factor = 32600;
@@ -30,6 +31,7 @@ float currentWeight = 0.00;
 constexpr size_t BUFFER_SIZE = 7; //1 char for the sign, 1 char for the decimal dot, 4 chars for the value & 1 char for null termination
 char buffer[BUFFER_SIZE];
 char rfid_buffer[100];
+String prevrfidTag;
 
 uint8_t mac[6] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x06};
 
@@ -63,7 +65,7 @@ void setup()
     // Ethernet
     if (Ethernet.begin(mac) == 0)
     {
-        // Serial.println(F("Unable to configure Ethernet using DHCP"));
+        Serial.println(F("Unable to configure Ethernet using DHCP"));
         for (;;)
             ;
     }
@@ -81,19 +83,20 @@ void setup()
     Serial.println(Ethernet.localIP());
     Serial.println();
 
-    // Scale
+    // // Scale
     scale.set_scale(calibration_factor);
     scale.tare();
 
-    // // RFID
+    // // // RFID
     rfid.init();
 
-    // LCD
+    // // LCD
     lcd.begin(16, 2); // 16 characters, 2 rows
     lcd.clear();
     lcd.setCursor(0, 0);
+    Serial.print(Ethernet.localIP());
     lcd.print("IP: " + Ethernet.localIP());
-    delay(1000);
+    // delay(1000);
 }
 
 void loop()
@@ -109,8 +112,8 @@ void loop()
         Serial.println(" Kg");
         currentWeight = scaleUnits;
 
-        dtostrf(currentWeight, BUFFER_SIZE - 1 /*width, including the decimal dot and minus sign*/, 2 /*precision*/, buffer);
-        client.publish("home/catbert/currentWeight", buffer, BUFFER_SIZE);
+        // dtostrf(currentWeight, BUFFER_SIZE - 1 /*width, including the decimal dot and minus sign*/, 2 /*precision*/, buffer);
+        // client.publish("home/catbert/currentWeight", buffer, BUFFER_SIZE);
 
         lcd.clear();
         lcd.setCursor(0, 0);
@@ -122,18 +125,24 @@ void loop()
     rfid.printTag(rfidtag);
     if (rfidtag != "None")
     {
-        Serial.println(rfidtag);
-        rfidtag.toCharArray(rfid_buffer, 11);
-        // dtostrf(rfidtag, BUFFER_SIZE - 1 /*width, including the decimal dot and minus sign*/, 2 /*precision*/, buffer);
-        // client.publish("home/catbert/currentRDIF", String.toCharArray(rfidtag), BUFFER_SIZE);
-        // client.publish("home/catbert/currentRFID", rfid_buffer);
+        if (rfidtag != prevrfidTag)
+        {
+            Serial.println(rfidtag);
+            rfidtag.toCharArray(rfid_buffer, 11);
+            // dtostrf(rfidtag, BUFFER_SIZE - 1 /*width, including the decimal dot and minus sign*/, 2 /*precision*/, buffer);
+            // client.publish("home/catbert/currentRDIF", String.toCharArray(rfidtag), BUFFER_SIZE);
+            client.publish("home/catbert/currentRFID", rfid_buffer);
 
-        lcd.clear();
-        lcd.setCursor(0, 0);
-        lcd.print("Huidige RFID:");
-        lcd.setCursor(0, 1);
-        lcd.print(rfidtag);
+            lcd.clear();
+            lcd.setCursor(0, 0);
+            lcd.print("Huidige RFID:");
+            Serial.print(rfidtag);
+            lcd.setCursor(0, 1);
+            lcd.print(rfidtag);
+
+            prevrfidTag = rfidtag;
+        }
     }
 
-    delay(100);
+    delay(200);
 }

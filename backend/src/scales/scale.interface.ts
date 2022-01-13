@@ -1,7 +1,7 @@
 import IEntity from '../entity/entity.interface';
 interface IScale extends IEntity {
+  address: string;
   description: string;
-  location: string;
   cats: Array<string>;
 }
 

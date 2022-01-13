@@ -1,7 +1,6 @@
 import { Request, Response, Router } from 'express';
 import Scale from './scale.interface';
 import scaleModel from './scales.model';
-import locationModel from '../locations/locations.model';
 import catModel from '../cats/cats.model';
 
 class ScalesController {
@@ -36,19 +35,11 @@ class ScalesController {
 
   update = (request: Request, response: Response) => {
     const id = request.params.id;
-    const { name, description, location, cats } = request.body;
+    const { name, description, cats } = request.body;
 
     this.scale.findById(id).then((scale) => {
       if (name) scale.name = name;
       if (description) scale.description = description;
-
-      if (location) {
-        scale.location = location;
-        locationModel.findById(location).then((location) => {
-          location.scales = [...location.scales, scale._id];
-          location.save();
-        });
-      }
 
       if (cats) {
         scale.cats = cats; // array met katten
@@ -70,15 +61,6 @@ class ScalesController {
     const { id } = request.params;
 
     this.scale.findByIdAndDelete(id).then((foundScale) => {
-      locationModel.findById(foundScale.location).then((foundLocation) => {
-        foundLocation.scales = foundLocation.scales.filter(
-          (item) => !foundScale._id.equals(item),
-        );
-        foundLocation.save().then((location) => {
-          response.send(location);
-        });
-      });
-
       foundScale.cats.forEach((cat) => {
         catModel.findById(cat).then((foundCat) => {
           foundCat.scales = foundCat.scales.filter(
@@ -91,22 +73,15 @@ class ScalesController {
   };
 
   create = (request: Request, response: Response) => {
-    console.log(request.body);
-    const { location, cats } = request.body;
+    const { cats } = request.body;
     const scaleData: Scale = {
       lastUpdated: Date(),
-      location: location,
       cats: cats,
       ...request.body,
     };
 
     const createdScale = new this.scale({
       ...scaleData,
-    });
-
-    locationModel.findById(location).then((location) => {
-      location.scales = [...location.scales, createdScale._id];
-      location.save();
     });
 
     if (cats.length > 0) {
@@ -119,10 +94,8 @@ class ScalesController {
     }
 
     createdScale.save().then((savedScale) => {
-      savedScale.populate('location').then((savedScale) => {
-        savedScale.populate('cats').then((savedScale) => {
-          response.send(savedScale);
-        });
+      savedScale.populate('cats').then((savedScale) => {
+        response.send(savedScale);
       });
     });
   };

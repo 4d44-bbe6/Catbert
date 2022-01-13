@@ -2,6 +2,7 @@ import { Request, Response, Router } from 'express';
 
 import Cat from './cat.interface';
 import catModel from './cats.model';
+import Mqtt from '../Mqtt';
 
 class CatsController {
   public path = '/cats';
@@ -18,6 +19,7 @@ class CatsController {
     this.router.get(`${this.path}/:id`, this.getById);
     this.router.patch(`${this.path}/:id`, this.update);
     this.router.delete(`${this.path}/:id`, this.remove);
+    this.router.post(`${this.path}/:addrfid`, this.addRFID);
   }
 
   getAll = (request: Request, response: Response) => {
@@ -56,6 +58,8 @@ class CatsController {
       }
     });
   };
+
+  addRFID = (request: Request, response: Response) => {};
 
   create = (request: Request, response: Response) => {
     const cat: Cat = {

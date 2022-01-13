@@ -1,38 +1,51 @@
 import { useState } from 'react';
-import { ScrollView, Text } from 'react-native';
-import styled from 'styled-components';
+import { ScrollView, View, Text } from 'react-native';
+import { Button } from 'react-native-paper';
+import { StyledTextInput, StyledText } from '../../styles';
 
 function CatAddScreen({ navigation }) {
   const [newCat, setNewCat] = useState();
+  const [addedCat, setAddedCat] = useState(false);
 
   const saveNew = async () => {
-    const result = await fetch('http://localhost:3000/cats/', {
+    await fetch('http://localhost:3000/cats/', {
       method: 'POST',
-
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name: newCat,
+      }),
     });
+
+    setAddedCat(true);
+    setNewCat('');
+
+    // setTimeout(() => {
+    //   navigation.push('Cats');
+    // }, 1000);
   };
+
   return (
     <ScrollView>
-      <Text>Voeg een kat toe</Text>
       <StyledTextInput
-        placeholder="Voeg een nieuw huisdier toe"
+        placeholder="Naam"
         value={newCat}
         onChangeText={setNewCat}
         multiline={false}
         keyboardType="default"
         returnKeyType="next"
       />
+      {!addedCat
+        ? <Button onPress={() => saveNew()}>Toevoegen</Button>
+        : (
+          <View>
+            <StyledText>Plaats de chip van het huisdier nu tegen de sensor.</StyledText>
+            <StyledText>Wachten op validatie van de chip...</StyledText>
+          </View>
+        )}
     </ScrollView>
   );
 }
 
 export default CatAddScreen;
-
-const StyledTextInput = styled.TextInput`
-  height: 40px;
-  width: 100%;
-  margin: 12px;
-  padding: 2px 15px;
-  border: 1px solid orange;
-  background-color: #FFFFFF;
-`;

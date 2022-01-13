@@ -1,16 +1,23 @@
 /* eslint-disable no-underscore-dangle */
 import { useState, useEffect } from 'react';
 import {
-  View, Pressable, ScrollView, Text,
+  View, Pressable, ScrollView, StyleSheet,
 } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
-import styled from 'styled-components/native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import CatAddScreen from '../cat-add-screen';
+import Item from '../../components/Item';
 import { getEntity } from '../../util';
+import { StyledAdd } from '../../styles';
 
 const Stack = createNativeStackNavigator();
+
+const styles = StyleSheet.create({
+  center: {
+    alignItems: 'center',
+  },
+});
 
 function Cats({ navigation }) {
   const [cats, setCats] = useState([]);
@@ -25,31 +32,31 @@ function Cats({ navigation }) {
   }, []);
 
   const renderCats = () => (
-    <ScrollView>
+    <ScrollView contentContainerStyle={styles.center}>
       {cats.length > 0 && cats.map((cat) => (
         <View key={cat._id}>
-          <Pressable>
-            <Text>{cat.name}</Text>
-          </Pressable>
+          <Item name={cat.name} status="Laatst gezien: 13:44" icon={{ name: 'cat' }} />
         </View>
       ))}
+
     </ScrollView>
   );
   return (
     <ScrollView>
-      {renderCats()}
-      <StyledHeaderAdd>
+      <View>
+        {renderCats()}
+        <StyledAdd>
+          <Pressable onPress={() => {
+            navigation.push('addCat', {
+              cats,
+            });
+          }}
+          >
+            <AntDesign name="pluscircle" size={24} color="green" />
+          </Pressable>
 
-        <Pressable onPress={() => {
-          navigation.push('addCat', {
-            cats,
-          });
-        }}
-        >
-          <AntDesign name="pluscircle" size={24} color="orange" />
-        </Pressable>
-
-      </StyledHeaderAdd>
+        </StyledAdd>
+      </View>
     </ScrollView>
   );
 }
@@ -59,8 +66,11 @@ function CatsScreen() {
     <NavigationContainer independent>
       <Stack.Navigator>
         <Stack.Screen
-          name="Huisdieren"
+          name="Cats"
           component={Cats}
+          options={{
+            title: 'Overzicht huisdieren',
+          }}
         />
         <Stack.Screen
           name="addCat"
@@ -75,11 +85,3 @@ function CatsScreen() {
 }
 
 export default CatsScreen;
-
-const StyledHeaderAdd = styled.View`
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  margin-top: 15px;
-  margin-right: 15px;
-`;

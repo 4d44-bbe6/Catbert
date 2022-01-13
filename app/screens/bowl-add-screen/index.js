@@ -6,81 +6,55 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import { Button } from 'react-native-paper';
 
 function BowlAddScreen({ route }) {
-  const { locations, cats } = route.params;
+  const { cats } = route.params;
 
+  const [addedScale, setAddedScale] = useState(false);
   // Dropdown pickers
-  const [pickerLocationOpen, setPickerLocationOpen] = useState(false);
-  const [pickerLocationValue, setPickerLocationValue] = useState();
   const [pickerCatsOpen, setPickerCatsOpen] = useState(false);
   const [pickerCatsValue, setPickerCatsValue] = useState([]);
 
-  const [newLocation, setNewLocation] = useState();
-  const [showAddNewLocation, toggleAddNewLocation] = useState(false);
+  const [scaleName, setScaleName] = useState();
+  const [scaleAddress, setScaleAddress] = useState();
 
-  const [name, setName] = useState();
-  const [addedScale, setAddedScale] = useState(false);
-
-  const addScale = async () => {
+  const addScale = async ({ navigation }) => {
     await fetch('http://localhost:3000/scales/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        name,
-        location: newLocation || pickerLocationValue,
+        name: scaleName,
         cats:
           pickerCatsValue,
       }),
     });
     setAddedScale(true);
+    setScaleName('');
+    setScaleAddress('');
+    setTimeout(() => {
+      navigation.push('Cats');
+    }, 1000);
   };
 
   return (
     <StyledContainer>
       <StyledTextInput
         placeholder="Hoe wil je de voerbak noemen?"
-        value={name}
-        onChangeText={setName}
+        value={scaleName}
+        onChangeText={setScaleName}
         multiline={false}
         keyboardType="default"
         returnKeyType="next"
       />
-      <Text>Waar staat de voerbak?</Text>
-
-      {locations.length > 0 && (
-      <DropDownPicker
-        open={pickerLocationOpen}
-        value={pickerLocationValue}
-        items={locations}
-        schema={{
-          label: 'name',
-          value: '_id',
-        }}
-        setOpen={setPickerLocationOpen}
-        setValue={setPickerLocationValue}
-        setItems={setPickerLocationValue}
-        zIndex={2000}
-        zIndexInverse={2000}
+      <StyledTextInput
+        placeholder="Wat is het IP-adres van de weegschaal?"
+        value={scaleAddress}
+        onChangeText={setScaleAddress}
+        multiline={false}
+        keyboardType="default"
+        returnKeyType="next"
       />
-      )}
 
-      {!showAddNewLocation ? (
-        <Button onPress={() => toggleAddNewLocation(!showAddNewLocation)}>
-          Of voeg een nieuwe lokatie toe..
-        </Button>
-      ) : (
-        <StyledTextInput
-          placeholder="Voeg een nieuwe lokatie toe"
-          value={newLocation}
-          onChangeText={setNewLocation}
-          multiline={false}
-          keyboardType="default"
-          returnKeyType="next"
-        />
-      )}
-
-      <Text>Welke katten eten uit deze voerbak?</Text>
       <DropDownPicker
         open={pickerCatsOpen}
         value={pickerCatsValue}
@@ -97,6 +71,11 @@ function BowlAddScreen({ route }) {
         max={10}
         zIndex={1000}
         zIndexInverse={1000}
+        translation={{
+          PLACEHOLDER: 'Welke katten hebben toegang?',
+          SELECTED_ITEMS_COUNT_TEXT: '{count} geselecteerd.',
+        }}
+
       />
       {addedScale !== true
         ? <Button onPress={() => addScale()}>Voeg een voerbak toe toe</Button>
