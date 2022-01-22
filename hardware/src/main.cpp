@@ -24,7 +24,7 @@ LiquidCrystal595 lcd(7, 8, 9);
 HX711 scale(SCALE_PIN_DAT, SCALE_PIN_CLK);
 
 const int timeout = 10000;
-const int calibration_factor = 32600;
+const int calibration_factor = 1265;
 const float minimum_weight_treshold = 0.05;
 
 float currentWeight = 0.00;
@@ -105,7 +105,10 @@ void loop()
     client.loop();
     float scaleUnits = scale.get_units();
     String rfidUid = "";
-    Serial.println(scaleUnits);
+    if (scaleUnits < 0)
+    {
+        scaleUnits = 0.00;
+    }
     if ((currentWeight - scaleUnits) < -minimum_weight_treshold || (currentWeight - scaleUnits > minimum_weight_treshold))
     {
         Serial.print(scaleUnits);
@@ -129,14 +132,12 @@ void loop()
         {
             Serial.println(rfidtag);
             rfidtag.toCharArray(rfid_buffer, 11);
-            // dtostrf(rfidtag, BUFFER_SIZE - 1 /*width, including the decimal dot and minus sign*/, 2 /*precision*/, buffer);
             // client.publish("home/catbert/currentRDIF", String.toCharArray(rfidtag), BUFFER_SIZE);
             client.publish("home/catbert/currentRFID", rfid_buffer);
 
             lcd.clear();
             lcd.setCursor(0, 0);
             lcd.print("Huidige RFID:");
-            Serial.print(rfidtag);
             lcd.setCursor(0, 1);
             lcd.print(rfidtag);
 
