@@ -1,5 +1,5 @@
 interface IMetric {
-  type: string;
+  topic: string;
   value: any;
   timestamp: Date;
 }

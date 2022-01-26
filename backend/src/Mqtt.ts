@@ -1,44 +1,58 @@
 import * as mqtt from 'mqtt';
+import metricModel from './metrics/metrics.model';
+import Metric from './metrics/metric.interface';
+
+const watchedTopics = [
+  'home/catbert/scales/Scale001/currentWeight',
+  'home/catbert/scales/Scale001/currentRFID',
+];
 
 class Mqtt {
   public server: string;
   public topics: Array<string>;
-  public client: mqtt.MqttClient;
 
   constructor(server: string, topics: Array<string>) {
+    console.log(topics);
     this.server = server;
     this.topics = topics;
-    this.initializeBroker();
+    this.initializeBroker(this.server);
   }
 
-  public initializeBroker(): void {
-    const clientId = `mqtt_${Math.random().toString(16).slice(3)}`;
-    this.client = mqtt.connect(`mqtt://${this.server}`, {
-      clientId,
-      clean: true,
-      connectTimeout: 4000,
-      reconnectPeriod: 1000,
+  private initializeBroker(server: string): void {
+    console.log(server);
+    const client = mqtt.connect(`mqtt://${server}`);
+
+    client.on('connect', function () {
+      watchedTopics.forEach((topic) => {
+        client.subscribe(topic, function (err) {
+          if (!err) {
+            console.log(`Subscribed to: ${topic}`);
+          }
+        });
+      });
     });
-    this.client.on('connect', () => {
-      console.log('Connected with MQTT server');
-      this.topics.forEach((topic) => {
-        this.subscribeToTopic(topic);
+
+    client.on('message', function (topic, message) {
+      watchedTopics.forEach((watchedTopic) => {
+        console.log(topic, watchedTopic);
+        if (topic === watchedTopic) {
+          const value = message.toString().replace(/ /g, '');
+          console.log(topic, value);
+          const metric = {
+            topic: topic,
+            value: value,
+            timestamp: Date(),
+          };
+          const createdMetric = new metricModel(metric);
+          console.log(createdMetric);
+          createdMetric.save().then((temp) => console.log(temp));
+        }
       });
     });
   }
 
   public sendComand(command: string): void {
     console.log(command);
-  }
-
-  public subscribeToTopic(topic: string): void {
-    this.client.subscribe(topic, () => {
-      console.log(`Subscribed to topic 'home/catbert/${topic}`);
-    });
-
-    this.client.on('message', (topic, payload) => {
-      console.log('Received message from topic: ', topic, payload.toString());
-    });
   }
 }
 

@@ -1,8 +1,6 @@
 import { Request, Response, Router } from 'express';
-
 import Metric from './metric.interface';
 import metricModel from './metrics.model';
-
 class MetricsController {
   public path = '/scales';
   public router = Router();
@@ -15,30 +13,39 @@ class MetricsController {
   public initializeRoutes() {
     this.router.post(this.path, this.create);
     this.router.get(this.path, this.getAll);
-    this.router.get(`${this.path}/:id`, this.getMetricById);
+    this.router.get(`${this.path}/:id`, this.getById);
   }
 
-  getAll = (request: Request, response: Response) => {
+  private getAll = (request: Request, response: Response) => {
     this.metric.find().then((scales) => {
       response.send(scales);
     });
   };
 
-  getMetricById = (request: Request, response: Response) => {
+  private getById = (request: Request, response: Response) => {
     const id = request.params.id;
     this.metric.findById(id).then((metric) => {
       response.send(metric);
     });
   };
 
-  create = (request: Request, response: Response) => {
+  public importMetric = (body) => {
     const metric: Metric = {
       lastUpdated: Date(),
-      ...request.body,
+      ...body,
     };
 
     const createdMetric = new metricModel(metric);
-    createdMetric.save().then((savedMetric) => {
+    console.log(createdMetric);
+
+    const temp = createdMetric.save().then((savedMetric) => {
+      return savedMetric;
+    });
+    return temp;
+  };
+
+  private create = (request: Request, response: Response) => {
+    this.importMetric(request.body).then((savedMetric) => {
       response.send(savedMetric);
     });
   };

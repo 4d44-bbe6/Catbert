@@ -13,7 +13,7 @@ class CatsController {
     this.initializeRoutes();
   }
 
-  public initializeRoutes() {
+  private initializeRoutes() {
     this.router.post(this.path, this.create);
     this.router.get(this.path, this.getAll);
     this.router.get(`${this.path}/:id`, this.getById);
@@ -22,20 +22,20 @@ class CatsController {
     this.router.post(`${this.path}/:addrfid`, this.addRFID);
   }
 
-  getAll = (request: Request, response: Response) => {
+  private getAll = (request: Request, response: Response) => {
     this.cat.find().then((cats) => {
       response.send(cats);
     });
   };
 
-  getById = (request: Request, response: Response) => {
+  private getById = (request: Request, response: Response) => {
     const id = request.params.id;
     this.cat.findById(id).then((cat) => {
       response.send(cat);
     });
   };
 
-  update = (request: Request, response: Response) => {
+  private update = (request: Request, response: Response) => {
     const id = request.params.id;
     const { name } = request.body;
 

@@ -2,7 +2,7 @@ import { model, Schema, Document } from 'mongoose';
 import IMetric from './metric.interface';
 
 const metricSchema = new Schema({
-  type: String,
+  topic: String,
   value: Schema.Types.Mixed,
   scale: {
     ref: 'Scale',
