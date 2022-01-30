@@ -14,26 +14,26 @@ class ScalesController {
 
   public initializeRoutes() {
     this.router.post(this.path, this.create);
-    this.router.get(this.path, this.getAll);
+    this.router.get(this.path, this.getAllByAPI);
     this.router.get(`${this.path}/:id`, this.getById);
     this.router.patch(`${this.path}/:id`, this.update);
     this.router.delete(`${this.path}/:id`, this.remove);
   }
 
-  getAll = (request: Request, response: Response) => {
+  private getAllByAPI = (request: Request, response: Response) => {
     this.scale.find().then((scales) => {
       response.send(scales);
     });
   };
 
-  getById = (request: Request, response: Response) => {
+  private getById = (request: Request, response: Response) => {
     const id = request.params.id;
     this.scale.findById(id).then((scale) => {
       response.send(scale);
     });
   };
 
-  update = (request: Request, response: Response) => {
+  private update = (request: Request, response: Response) => {
     const id = request.params.id;
     const { name, description, cats } = request.body;
 
@@ -57,7 +57,7 @@ class ScalesController {
     });
   };
 
-  remove = (request: Request, response: Response) => {
+  private remove = (request: Request, response: Response) => {
     const { id } = request.params;
 
     this.scale.findByIdAndDelete(id).then((foundScale) => {
@@ -72,7 +72,8 @@ class ScalesController {
     });
   };
 
-  create = (request: Request, response: Response) => {
+  private create = (request: Request, response: Response) => {
+    console.log(request.body);
     const { cats } = request.body;
     const scaleData: Scale = {
       lastUpdated: Date(),

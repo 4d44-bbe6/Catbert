@@ -1,6 +1,5 @@
 import * as mqtt from 'mqtt';
 import metricModel from './metrics/metrics.model';
-import Metric from './metrics/metric.interface';
 
 const watchedTopics = [
   'home/catbert/scales/Scale001/currentWeight',
@@ -12,14 +11,12 @@ class Mqtt {
   public topics: Array<string>;
 
   constructor(server: string, topics: Array<string>) {
-    console.log(topics);
     this.server = server;
     this.topics = topics;
     this.initializeBroker(this.server);
   }
 
-  private initializeBroker(server: string): void {
-    console.log(server);
+  private initializeBroker(server: string) {
     const client = mqtt.connect(`mqtt://${server}`);
 
     client.on('connect', function () {
@@ -33,21 +30,17 @@ class Mqtt {
     });
 
     client.on('message', function (topic, message) {
-      watchedTopics.forEach((watchedTopic) => {
-        console.log(topic, watchedTopic);
-        if (topic === watchedTopic) {
-          const value = message.toString().replace(/ /g, '');
-          console.log(topic, value);
-          const metric = {
-            topic: topic,
-            value: value,
-            timestamp: Date(),
-          };
-          const createdMetric = new metricModel(metric);
-          console.log(createdMetric);
-          createdMetric.save().then((temp) => console.log(temp));
-        }
-      });
+      if (topic === watchedTopics[0]) {
+        const value = message.toString().replace(/ /g, '');
+        const metric = {
+          topic: topic,
+          value: value,
+          timestamp: Date(),
+          scale: '61f2979c9ccf0a042c7667bf',
+        };
+        const createdMetric = new metricModel(metric);
+        createdMetric.save().then((temp) => console.log(temp));
+      }
     });
   }
 
