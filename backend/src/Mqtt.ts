@@ -7,17 +7,17 @@ const watchedTopics = [
 ];
 
 class Mqtt {
-  public server: string;
+  private static server: string;
   public topics: Array<string>;
 
   constructor(server: string, topics: Array<string>) {
-    this.server = server;
+    Mqtt.server = server;
     this.topics = topics;
-    this.initializeBroker(this.server);
+    this.initializeBrokerConnection();
   }
 
-  private initializeBroker(server: string) {
-    const client = mqtt.connect(`mqtt://${server}`);
+  private initializeBrokerConnection() {
+    const client = mqtt.connect(`mqtt://${Mqtt.server}`);
 
     client.on('connect', function () {
       watchedTopics.forEach((topic) => {
@@ -32,6 +32,7 @@ class Mqtt {
     client.on('message', function (topic, message) {
       if (topic === watchedTopics[0]) {
         const value = message.toString().replace(/ /g, '');
+
         const metric = {
           topic: topic,
           value: value,
@@ -44,8 +45,9 @@ class Mqtt {
     });
   }
 
-  public sendComand(command: string): void {
-    console.log(command);
+  static sendCommand(command: string): void {
+    const client = mqtt.connect(`mqtt://${Mqtt.server}`);
+    client.publish('home/catbert/scales/Scale001/command', command);
   }
 }
 

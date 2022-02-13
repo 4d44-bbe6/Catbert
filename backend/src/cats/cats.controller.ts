@@ -19,7 +19,7 @@ class CatsController {
     this.router.get(`${this.path}/:id`, this.getById);
     this.router.patch(`${this.path}/:id`, this.update);
     this.router.delete(`${this.path}/:id`, this.remove);
-    this.router.post(`${this.path}/:addrfid`, this.addRFID);
+    this.router.post(`${this.path}/registerRFID`, this.addRFID);
   }
 
   private getAll = (request: Request, response: Response) => {
@@ -59,7 +59,10 @@ class CatsController {
     });
   };
 
-  addRFID = (request: Request, response: Response) => {};
+  addRFID = (request: Request, response: Response) => {
+    Mqtt.sendCommand('registerNewCat');
+    response.send('registering new cat..');
+  };
 
   create = (request: Request, response: Response) => {
     const cat: Cat = {

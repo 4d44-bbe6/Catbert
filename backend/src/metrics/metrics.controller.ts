@@ -24,7 +24,7 @@ class MetricsController {
   };
 
   private getMetricsByRange = (request: Request, response: Response) => {
-    let fromDate;
+    let fromDate: Date;
     const { id, range } = request.params;
 
     switch (range) {
@@ -70,6 +70,7 @@ class MetricsController {
       case 'lastWeek': {
         const parsedMetrics = [];
         fromDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+        console.log(fromDate);
         this.metric
           .find({
             scale: id,
@@ -82,22 +83,25 @@ class MetricsController {
             let tmpCount = 0;
             const days = ['Zo', 'Ma', 'Di', 'Wo', 'Do', 'Vr', 'Za'];
             days.forEach((day) => {
+              let currentDay = true;
               const avgMetric = [];
               foundMetrics.forEach((foundMetric) => {
+                const logDay = currentDay ? day : '';
                 const metricDay = days[foundMetric['timestamp'].getDay()];
                 if (metricDay === day) {
                   avgMetric.push({
-                    timestamp: day,
+                    timestamp: logDay,
                     value: parseInt(foundMetric['value']),
                   });
+                  currentDay = false;
                 }
-                console.log(day, avgMetric);
+
                 avgMetric.forEach(({ value }) => {
                   tmpCount += value;
                 });
                 if (avgMetric.length > 0) {
                   parsedMetrics.push({
-                    timestamp: day,
+                    timestamp: logDay,
                     value: tmpCount / avgMetric.length,
                   });
                 }
