@@ -14,13 +14,18 @@ class CatsController {
   }
 
   private initializeRoutes() {
-    this.router.post(this.path, this.create);
+    this.router.post(this.path, this.createEndPoint);
     this.router.get(this.path, this.getAll);
     this.router.get(`${this.path}/:id`, this.getById);
     this.router.patch(`${this.path}/:id`, this.update);
     this.router.delete(`${this.path}/:id`, this.remove);
     this.router.post(`${this.path}/registerRFID`, this.addRFID);
   }
+
+  private createEndPoint = async (request: Request, response: Response) => {
+    const cat = await this.create(request.body);
+    response.send(cat);
+  };
 
   private getAll = (request: Request, response: Response) => {
     this.cat.find().then((cats) => {
@@ -47,7 +52,7 @@ class CatsController {
     });
   };
 
-  remove = async (request: Request, response: Response) => {
+  private remove = async (request: Request, response: Response) => {
     const id = request.params.id;
 
     this.cat.findByIdAndDelete(id).then((successResponse) => {
@@ -59,21 +64,28 @@ class CatsController {
     });
   };
 
-  addRFID = (request: Request, response: Response) => {
+  private addRFID = (request: Request, response: Response) => {
     Mqtt.sendCommand('registerNewCat');
     response.send('registering new cat..');
+
+    let rfid = '';
+    while (rfid !== '') {
+      rfid = Mqtt.getNewRFID();
+      console.log(rfid);
+    }
+    Mqtt.sendCommand('');
   };
 
-  create = (request: Request, response: Response) => {
+  private create = async (data) => {
     const cat: Cat = {
       lastUpdated: Date(),
-      ...request.body,
+      ...data,
     };
 
-    const createdCat = new catModel(cat);
-    createdCat.save().then((savedCat) => {
-      response.send(savedCat);
-    });
+    const newCat = new catModel(cat);
+    const savedCat = await newCat.save();
+
+    return savedCat;
   };
 }
 

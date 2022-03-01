@@ -1,4 +1,4 @@
-import BowlAddScreen from '../screens/bowl-add-screen';
+import BowlAddScreen from '../screens/bowls/bowl-add-screen';
 
 function BowlAddContainer({ navigation }) {
   return <BowlAddScreen navigation={navigation} />;

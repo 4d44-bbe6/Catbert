@@ -1,4 +1,4 @@
-import CatsScreen from '../screens/cats-screen';
+import CatsScreen from '../screens/cats/cats-screen';
 
 function CatsContainer() {
   return <CatsScreen />;

@@ -13,6 +13,12 @@
     "navigation": ["tabs"]
   },
   {
+    "component": "StockContainer",
+    "icon": "warehouse",
+    "name": "Stock",
+    "navigation": ["tabs"]
+  },
+  {
     "component": "InfoContainer",
     "icon": "information",
     "name": "About",

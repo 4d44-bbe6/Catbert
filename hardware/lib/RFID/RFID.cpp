@@ -137,7 +137,7 @@ void RFID::init()
 
     //ClearBitMask(Status2Reg, 0x08);	//MFCrypto1On=0
     //writeMFRC522(RxSelReg, 0x86);		//RxWait = RxSelReg[5..0]
-    //writeMFRC522(RFCfgReg, 0x7F);   	//RxGain = 48dB
+    writeMFRC522(RFCfgReg, 0x7F); //RxGain = 48dB
 
     antennaOn(); //Abre  la antena
 }

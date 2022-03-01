@@ -1,4 +1,4 @@
-import BowlsScreen from '../screens/bowls-screen';
+import BowlsScreen from '../screens/bowls/bowls-screen';
 
 function BowlsScreenContainer() {
   return <BowlsScreen />;

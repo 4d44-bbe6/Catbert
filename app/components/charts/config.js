@@ -10,8 +10,8 @@ export const chartConfig = {
   color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
   labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
   propsForDots: {
-    r: '6',
-    strokeWidth: '2',
+    r: '2',
+    strokeWidth: '1',
     stroke: '#ffa726',
   },
 };

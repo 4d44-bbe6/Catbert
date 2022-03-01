@@ -1,4 +1,4 @@
-import BowlSupplyScreen from '../screens/bowl-supply-screen';
+import BowlSupplyScreen from '../screens/bowls/bowl-supply-screen';
 
 function BowlSupplyContainer() {
   return <BowlSupplyScreen />;

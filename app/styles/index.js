@@ -22,6 +22,8 @@ export const StyledItem = styled.View`
   background-color: #cFcFcF;
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 `;
 
 export const StyledText = styled.Text`

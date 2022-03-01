@@ -5,18 +5,24 @@ import styled from 'styled-components';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { Button } from 'react-native-paper';
 
-function BowlAddScreen({ route }) {
+function BowlAddScreen({ route, navigation }) {
   const { cats } = route.params;
 
   const [addedScale, setAddedScale] = useState(false);
-  // Dropdown pickers
+
   const [pickerCatsOpen, setPickerCatsOpen] = useState(false);
   const [pickerCatsValue, setPickerCatsValue] = useState([]);
 
   const [scaleName, setScaleName] = useState();
   const [scaleAddress, setScaleAddress] = useState();
 
-  const addScale = async ({ navigation }) => {
+  const clearInput = () => {
+    setAddedScale(true);
+    setScaleName('');
+    setScaleAddress('');
+  };
+
+  const addScale = async () => {
     await fetch('http://localhost:3000/scales/', {
       method: 'POST',
       headers: {
@@ -28,11 +34,9 @@ function BowlAddScreen({ route }) {
           pickerCatsValue,
       }),
     });
-    setAddedScale(true);
-    setScaleName('');
-    setScaleAddress('');
+    clearInput();
     setTimeout(() => {
-      navigation.push('Cats');
+      navigation.push('Bowls');
     }, 1000);
   };
 

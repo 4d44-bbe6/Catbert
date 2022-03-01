@@ -7,9 +7,9 @@ import { AntDesign } from '@expo/vector-icons';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import CatAddScreen from '../cat-add-screen';
-import Item from '../../components/Item';
-import { getEntity } from '../../util';
-import { StyledAdd } from '../../styles';
+import Item from '../../../components/Item';
+import { getEntity } from '../../../util';
+import { StyledAdd } from '../../../styles';
 
 const Stack = createNativeStackNavigator();
 

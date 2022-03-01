@@ -3,6 +3,7 @@ import {
 } from 'react-native';
 import { StackedBarChart } from 'react-native-chart-kit';
 import styled from 'styled-components';
+import { chartConfig, chartStyle } from '../../../components/charts/config';
 
 function BowlScreen({ bowl }) {
   return (

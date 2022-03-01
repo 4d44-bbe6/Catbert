@@ -49,6 +49,19 @@ class Mqtt {
     const client = mqtt.connect(`mqtt://${Mqtt.server}`);
     client.publish('home/catbert/scales/Scale001/command', command);
   }
+
+  static getNewRFID(): string {
+    let rfid = '';
+    const client = mqtt.connect(`mqtt://${Mqtt.server}`);
+    client.subscribe('home/catbert/newRFID', function (err) {
+      if (!err) {
+        client.on('message', function (topic, message) {
+          rfid = message.toString();
+        });
+      }
+    });
+    return rfid;
+  }
 }
 
 export default Mqtt;

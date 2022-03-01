@@ -73,7 +73,6 @@ class ScalesController {
   };
 
   private create = (request: Request, response: Response) => {
-    console.log(request.body);
     const { cats } = request.body;
     const scaleData: Scale = {
       lastUpdated: Date(),
@@ -81,20 +80,20 @@ class ScalesController {
       ...request.body,
     };
 
-    const createdScale = new this.scale({
+    const newScale = new this.scale({
       ...scaleData,
     });
 
     if (cats.length > 0) {
       cats.forEach((cat) => {
         catModel.findById(cat).then((cat) => {
-          cat.scales = [...cat.scales, createdScale._id];
+          cat.scales = [...cat.scales, newScale._id];
           cat.save();
         });
       });
     }
 
-    createdScale.save().then((savedScale) => {
+    newScale.save().then((savedScale) => {
       savedScale.populate('cats').then((savedScale) => {
         response.send(savedScale);
       });

@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { ScrollView, View, Text } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { Button } from 'react-native-paper';
-import { StyledTextInput, StyledText } from '../../styles';
+import { StyledTextInput, StyledText } from '../../../styles';
 
-function CatAddScreen({ navigation }) {
+function CatAddScreen() {
   const [newCat, setNewCat] = useState();
   const [addedCat, setAddedCat] = useState(false);
 
@@ -20,10 +20,6 @@ function CatAddScreen({ navigation }) {
 
     setAddedCat(true);
     setNewCat('');
-
-    // setTimeout(() => {
-    //   navigation.push('Cats');
-    // }, 1000);
   };
 
   return (

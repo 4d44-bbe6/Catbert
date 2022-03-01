@@ -1,4 +1,4 @@
-import CatAddScreen from '../screens/cat-add-screen';
+import CatAddScreen from '../screens/cats/cat-add-screen';
 
 function CatAddContainer({ navigation }) {
   return <CatAddScreen navigation={navigation} />;

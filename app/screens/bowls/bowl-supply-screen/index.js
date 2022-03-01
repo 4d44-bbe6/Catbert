@@ -1,6 +1,6 @@
 import { View, Text } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
-import { StyledAdd } from '../../styles';
+import { StyledAdd } from '../../../styles';
 
 const BowlSupplyScreen = ({ navigation }) => {
   <View>

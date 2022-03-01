@@ -138,8 +138,8 @@ class MetricsController {
       ...body,
     };
 
-    const createdMetric = new metricModel(metric);
-    const temp = createdMetric.save().then((savedMetric) => {
+    const newMetric = new metricModel(metric);
+    const temp = newMetric.save().then((savedMetric) => {
       return savedMetric;
     });
     return temp;
