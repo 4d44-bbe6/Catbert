@@ -1,15 +1,21 @@
+import { StyleSheet } from 'react-native';
 import { Appbar } from 'react-native-paper';
+import { colors } from '../../styles';
 
-function AppBar({
-  subtitle,
-}) {
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: colors.primary,
+  },
+});
+
+function AppBar() {
   return (
-    <Appbar.Header>
+    <Appbar.Header style={styles.container}>
       <Appbar.Content
-        subtitle={subtitle}
         title="Catbert"
       />
     </Appbar.Header>
+
   );
 }
 

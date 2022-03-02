@@ -1,26 +1,29 @@
-/* eslint-disable no-underscore-dangle */
 import { useEffect, useState } from 'react';
 import {
-  View, ScrollView, Pressable, Text,
+  View, ScrollView, Pressable, StyleSheet,
 } from 'react-native';
-import { AntDesign } from '@expo/vector-icons';
+
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import LineChart from '../../../components/charts/LineChart';
-import PieChart from '../../../components/charts/PieChart';
+import {
+  ALERT_TYPE, Toast,
+} from 'react-native-alert-notification';
 
 import { getEntity } from '../../../util';
 import BowlAddScreen from '../bowl-add-screen';
 import BowlSupplyScreen from '../bowl-supply-screen';
-import Item from '../../../components/Item';
-import { StyledAdd } from '../../../styles';
+
+import AddButton from '../../../components/elements/AddButton';
+import { theme } from '../../../styles';
+
+import BowlItem from '../bowl-screen';
 
 const Stack = createNativeStackNavigator();
 
 function Bowls({ navigation }) {
   const [scales, setScales] = useState([]);
   const [cats, setCats] = useState([]);
-  const [showScale, toggleScale] = useState(-1);
+
   const [scaleDayMetrics, setScaleDayMetrics] = useState();
   const [scaleWeekMetrics, setScaleWeekMetrics] = useState();
 
@@ -55,68 +58,71 @@ function Bowls({ navigation }) {
     })));
   };
 
+  const removeScale = async (id) => {
+    const response = await fetch(`http://localhost:3000/scales/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    Toast.show({
+      type: ALERT_TYPE.SUCCESS,
+      title: 'Voerbak verwijderd!',
+    });
+    fetchData();
+    return response;
+  };
+
   useEffect(() => {
     fetchData();
     fetchMetrics();
   }, []);
 
   const renderBowls = () => (
-    <ScrollView>
-      {scales.length > 0 && scales.map((scale, index) => (
+    <View style={styles.container}>
+      {scales.length > 0 && scales.map((scale) => (
         <View key={scale._id}>
-          <Pressable onPress={() => (showScale === index ? toggleScale(-1) : toggleScale(index))}>
-            <Item
-              name={scale.name}
-              status="Huidig gewicht: 193g"
-              icon={{
-                name: 'bowl',
-              }}
-              remove
-            />
-          </Pressable>
-          {index === showScale && (
-          <>
-            <Text>Gewicht afgelopen 24 uur.</Text>
-            <LineChart
-              scale={scale._id}
-              labels={scaleDayMetrics.map((scaleMetric) => `${scaleMetric.timestamp}:00`)}
-              data={scaleDayMetrics.map((scaleMetric) => (scaleMetric.value))}
-            />
-            <Text>Gewicht afgelopen 7 dagen.</Text>
-            <LineChart
-              scale={scale._id}
-              labels={scaleWeekMetrics.map((scaleMetric) => `${scaleMetric.timestamp}`)}
-              data={scaleWeekMetrics.map((scaleMetric) => (scaleMetric.value))}
-            />
-            <PieChart scale={scale._id} />
-          </>
-          )}
+          <BowlItem
+            scale={scale}
+            status="Huidig gewicht: 193g"
+            icon={{
+              name: 'bowl',
+            }}
+            remove={removeScale}
+            metrics={{
+              day: scaleDayMetrics,
+              week: scaleWeekMetrics,
+            }}
+          />
         </View>
       ))}
 
-    </ScrollView>
+    </View>
   );
 
   return (
     <ScrollView>
       {renderBowls()}
-      <StyledAdd>
-        <Pressable onPress={() => {
-          navigation.push('addBowl', {
-            cats,
-          });
-        }}
-        >
-          <AntDesign name="pluscircle" size={24} color="green" />
-        </Pressable>
-      </StyledAdd>
+
+      <Pressable onPress={() => {
+        navigation.push('addBowl', {
+          cats,
+        });
+      }}
+      >
+        <AddButton />
+      </Pressable>
+
     </ScrollView>
   );
 }
 
 function BowlsScreen() {
   return (
-    <NavigationContainer independent>
+    <NavigationContainer
+      theme={theme}
+      independent
+    >
       <Stack.Navigator>
         <Stack.Screen
           name="Bowls"
@@ -124,6 +130,7 @@ function BowlsScreen() {
           options={{
             title: 'Overzicht voerbakken',
           }}
+
         />
         <Stack.Screen
           name="addBowl"
@@ -145,3 +152,11 @@ function BowlsScreen() {
 }
 
 export default BowlsScreen;
+
+const styles = StyleSheet.create({
+  container: {
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100%',
+  },
+});

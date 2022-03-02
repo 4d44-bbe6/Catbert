@@ -1,5 +1,4 @@
 import { createStackNavigator } from '@react-navigation/stack';
-
 import Tabs from './tabs-navigation';
 
 const Stack = createStackNavigator();
@@ -16,7 +15,13 @@ function Root({
     >
       <Stack.Screen
         name="Tabs"
-        options={headerProps}
+        options={{
+          ...headerProps,
+          headerStyle: {
+            backgroundColor: '#f4511e',
+          },
+        }}
+
       >
         {() => (
           <Tabs

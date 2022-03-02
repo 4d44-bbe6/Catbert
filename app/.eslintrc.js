@@ -19,6 +19,8 @@ module.exports = {
   },
   plugins: ['react', 'react-hooks', 'prettier'],
   rules: {
+    'no-use-before-define': ['error', { variables: false }],
+    'no-underscore-dangle': 'off',
     'max-len': 'off',
     'react/react-in-jsx-scope': 'off',
     'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx'] }],
