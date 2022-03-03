@@ -1,7 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 import { useState, useEffect } from 'react';
 import {
-  View, Pressable, ScrollView, StyleSheet,
+  View, Pressable, ScrollView,
 } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -12,12 +12,6 @@ import { getEntity } from '../../../util';
 import AddButton from '../../../components/elements/AddButton';
 
 const Stack = createNativeStackNavigator();
-
-const styles = StyleSheet.create({
-  center: {
-    alignItems: 'center',
-  },
-});
 
 function Cats({ navigation }) {
   const [cats, setCats] = useState([]);
@@ -32,12 +26,9 @@ function Cats({ navigation }) {
   }, []);
 
   return (
-    <View contentContainerStyle={{
-      display: 'flex', flexDirection: 'column', height: '100%',
-    }}
-    >
+    <View>
       <View>
-        <ScrollView contentContainerStyle={styles.center}>
+        <ScrollView>
           {cats.length > 0 && cats.map((cat) => (
             <View key={cat._id}>
               <Item item={cat} status="Laatst gezien: 13:24" icon={{ name: 'cat' }} />

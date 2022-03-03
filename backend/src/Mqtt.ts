@@ -46,8 +46,8 @@ class Mqtt {
   }
 
   static sendCommand(command: string): void {
+    console.log('command to mqtt', command);
     const client = mqtt.connect(`mqtt://${Mqtt.server}`);
-    console.log(command);
     client.publish('home/catbert/scales/Scale001/command', command);
   }
 

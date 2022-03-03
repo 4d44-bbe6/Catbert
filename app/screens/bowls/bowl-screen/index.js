@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import {
-  ScrollView, View, Pressable, Text, StyleSheet,
+  ScrollView, View, Pressable, Text,
 } from 'react-native';
 import {
   FontAwesome5, MaterialCommunityIcons, AntDesign, Entypo,
@@ -9,7 +9,7 @@ import {
 import LineChart from '../../../components/charts/LineChart';
 import PieChart from '../../../components/charts/PieChart';
 
-import { colors } from '../../../styles';
+import { styles } from '../../../styles';
 
 function BowlItem({
   scale, status, icon, remove = false, metrics,
@@ -99,57 +99,3 @@ function BowlItem({
 }
 
 export default BowlItem;
-
-const styles = StyleSheet.create({
-  column: {
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  row: {
-    display: 'flex',
-    flexDirection: 'row',
-  },
-  itemContainer: {
-    backgroundColor: colors.primary,
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingTop: 10,
-    paddingBottom: 10,
-    paddingLeft: 20,
-    paddingRight: 20,
-  },
-  icon: {
-    marginTop: 5,
-  },
-  titleContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    marginLeft: 20,
-  },
-  title: {
-    color: colors.textLight,
-    fontSize: 16,
-  },
-  subtitle: {
-    color: colors.textLight,
-    fontSize: 14,
-  },
-  graphTitle: {
-    paddingTop: 10,
-    paddingBottom: 10,
-    textAlign: 'center',
-    color: colors.text,
-  },
-  warningContainer: {
-    backgroundColor: colors.warning,
-    padding: 10,
-
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  warningTitle: {
-    color: colors.textLight,
-  },
-});

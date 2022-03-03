@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import {
-  View, ScrollView, Pressable, StyleSheet,
+  View, ScrollView, Pressable,
 } from 'react-native';
 
 import { NavigationContainer } from '@react-navigation/native';
@@ -14,7 +14,7 @@ import BowlAddScreen from '../bowl-add-screen';
 import BowlSupplyScreen from '../bowl-supply-screen';
 
 import AddButton from '../../../components/elements/AddButton';
-import { theme } from '../../../styles';
+import { styles, theme } from '../../../styles';
 
 import BowlItem from '../bowl-screen';
 
@@ -78,32 +78,26 @@ function Bowls({ navigation }) {
     fetchMetrics();
   }, []);
 
-  const renderBowls = () => (
-    <View style={styles.container}>
-      {scales.length > 0 && scales.map((scale) => (
-        <View key={scale._id}>
-          <BowlItem
-            scale={scale}
-            status="Huidig gewicht: 193g"
-            icon={{
-              name: 'bowl',
-            }}
-            remove={removeScale}
-            metrics={{
-              day: scaleDayMetrics,
-              week: scaleWeekMetrics,
-            }}
-          />
-        </View>
-      ))}
-
-    </View>
-  );
-
   return (
     <ScrollView>
-      {renderBowls()}
-
+      <View style={styles.column}>
+        {scales.length > 0 && scales.map((scale) => (
+          <View key={scale._id}>
+            <BowlItem
+              scale={scale}
+              status="Huidig gewicht: 193g"
+              icon={{
+                name: 'bowl',
+              }}
+              remove={removeScale}
+              metrics={{
+                day: scaleDayMetrics,
+                week: scaleWeekMetrics,
+              }}
+            />
+          </View>
+        ))}
+      </View>
       <Pressable onPress={() => {
         navigation.push('addBowl', {
           cats,
@@ -112,7 +106,6 @@ function Bowls({ navigation }) {
       >
         <AddButton />
       </Pressable>
-
     </ScrollView>
   );
 }
@@ -152,11 +145,3 @@ function BowlsScreen() {
 }
 
 export default BowlsScreen;
-
-const styles = StyleSheet.create({
-  container: {
-    display: 'flex',
-    flexDirection: 'column',
-    height: '100%',
-  },
-});

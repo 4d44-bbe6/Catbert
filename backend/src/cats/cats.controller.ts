@@ -64,7 +64,8 @@ class CatsController {
     });
   };
 
-  private addRFID = (request: Request, response: Response) => {
+  private addRFID = async (request: Request, response: Response) => {
+    console.log(request);
     Mqtt.sendCommand('registerNewCat');
 
     let rfid = '';
@@ -72,8 +73,8 @@ class CatsController {
       rfid = Mqtt.getNewRFID();
       console.log(rfid);
     }
-    Mqtt.sendCommand('');
-    response.send('registering new cat..');
+
+    response.send(`registering new cat for: ${rfid}`);
   };
 
   private create = async (data) => {

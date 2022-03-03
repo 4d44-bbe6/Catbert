@@ -1,9 +1,10 @@
 /* eslint-disable no-underscore-dangle */
 import { useState } from 'react';
-import { Text } from 'react-native';
-import styled from 'styled-components';
+import { View, Text, TextInput } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { Button } from 'react-native-paper';
+
+import { styles } from '../../../styles';
 
 function BowlAddScreen({ route, navigation }) {
   const { cats } = route.params;
@@ -41,8 +42,9 @@ function BowlAddScreen({ route, navigation }) {
   };
 
   return (
-    <StyledContainer>
-      <StyledTextInput
+    <View style={styles.container}>
+      <TextInput
+        style={styles.input}
         placeholder="Hoe wil je de voerbak noemen?"
         value={scaleName}
         onChangeText={setScaleName}
@@ -50,7 +52,8 @@ function BowlAddScreen({ route, navigation }) {
         keyboardType="default"
         returnKeyType="next"
       />
-      <StyledTextInput
+      <TextInput
+        style={styles.input}
         placeholder="Wat is het IP-adres van de weegschaal?"
         value={scaleAddress}
         onChangeText={setScaleAddress}
@@ -84,25 +87,8 @@ function BowlAddScreen({ route, navigation }) {
       {addedScale !== true
         ? <Button onPress={() => addScale()}>Voeg een voerbak toe toe</Button>
         : <Text>Je voerbak is toegevoegd.</Text>}
-    </StyledContainer>
+    </View>
   );
 }
 
 export default BowlAddScreen;
-
-const StyledContainer = styled.View`
-  padding: 20px;
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  align-items: center;
-`;
-
-const StyledTextInput = styled.TextInput`
-  height: 40px;
-  width: 100%;
-  margin: 12px;
-  padding: 2px 15px;
-  border: 1px solid orange;
-  background-color: #FFFFFF;
-`;
