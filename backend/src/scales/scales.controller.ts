@@ -59,6 +59,7 @@ class ScalesController {
 
   private remove = (request: Request, response: Response) => {
     const { id } = request.params;
+    console.log('backend removing: ', id);
 
     this.scale.findByIdAndDelete(id).then((foundScale) => {
       foundScale.cats.forEach((cat) => {
@@ -66,7 +67,10 @@ class ScalesController {
           foundCat.scales = foundCat.scales.filter(
             (item) => !foundCat._id.equals(item),
           );
-          foundCat.save();
+          foundCat.save().then(() => {
+            console.log('deleted');
+            response.send('Deleted');
+          });
         });
       });
     });

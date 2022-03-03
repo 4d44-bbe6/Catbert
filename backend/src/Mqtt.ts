@@ -40,13 +40,14 @@ class Mqtt {
           scale: '61f2979c9ccf0a042c7667bf',
         };
         const createdMetric = new metricModel(metric);
-        createdMetric.save().then((temp) => console.log(temp));
+        createdMetric.save();
       }
     });
   }
 
   static sendCommand(command: string): void {
     const client = mqtt.connect(`mqtt://${Mqtt.server}`);
+    console.log(command);
     client.publish('home/catbert/scales/Scale001/command', command);
   }
 

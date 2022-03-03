@@ -1,14 +1,14 @@
 {
   "expo": {
-    "name": "Catbert",
-    "slug": "Catbert",
+    "name": "d",
+    "slug": "d",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
       "image": "./assets/Catbert.png",
       "resizeMode": "cover",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#D3ECA7"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -22,7 +22,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#FFFFFF"
+        "backgroundColor": "#D3ECA7"
       }
     },
     "web": {

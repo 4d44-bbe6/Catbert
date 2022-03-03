@@ -66,7 +66,6 @@ class CatsController {
 
   private addRFID = (request: Request, response: Response) => {
     Mqtt.sendCommand('registerNewCat');
-    response.send('registering new cat..');
 
     let rfid = '';
     while (rfid !== '') {
@@ -74,6 +73,7 @@ class CatsController {
       console.log(rfid);
     }
     Mqtt.sendCommand('');
+    response.send('registering new cat..');
   };
 
   private create = async (data) => {

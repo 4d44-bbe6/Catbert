@@ -3,13 +3,13 @@ import { useState, useEffect } from 'react';
 import {
   View, Pressable, ScrollView, StyleSheet,
 } from 'react-native';
-import { AntDesign } from '@expo/vector-icons';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import CatAddScreen from '../cat-add-screen';
 import Item from '../../../components/Item';
 import { getEntity } from '../../../util';
-import { StyledAdd } from '../../../styles';
+
+import AddButton from '../../../components/elements/AddButton';
 
 const Stack = createNativeStackNavigator();
 
@@ -31,33 +31,31 @@ function Cats({ navigation }) {
     fetchData();
   }, []);
 
-  const renderCats = () => (
-    <ScrollView contentContainerStyle={styles.center}>
-      {cats.length > 0 && cats.map((cat) => (
-        <View key={cat._id}>
-          <Item name={cat.name} status="Laatst gezien: 13:44" icon={{ name: 'cat' }} />
-        </View>
-      ))}
-
-    </ScrollView>
-  );
   return (
-    <ScrollView>
+    <View contentContainerStyle={{
+      display: 'flex', flexDirection: 'column', height: '100%',
+    }}
+    >
       <View>
-        {renderCats()}
-        <StyledAdd>
+        <ScrollView contentContainerStyle={styles.center}>
+          {cats.length > 0 && cats.map((cat) => (
+            <View key={cat._id}>
+              <Item item={cat} status="Laatst gezien: 13:24" icon={{ name: 'cat' }} />
+            </View>
+          ))}
+        </ScrollView>
+        <View>
           <Pressable onPress={() => {
             navigation.push('addCat', {
               cats,
             });
           }}
           >
-            <AntDesign name="pluscircle" size={24} color="green" />
+            <AddButton />
           </Pressable>
-
-        </StyledAdd>
+        </View>
       </View>
-    </ScrollView>
+    </View>
   );
 }
 

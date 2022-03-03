@@ -1,6 +1,7 @@
 import { Request, Response, Router } from 'express';
 import Metric from './metric.interface';
 import metricModel from './metrics.model';
+import catModel from '../cats/cats.model';
 class MetricsController {
   public path = '/metrics';
   public router = Router();
@@ -26,6 +27,8 @@ class MetricsController {
   private getMetricsByRange = (request: Request, response: Response) => {
     let fromDate: Date;
     const { id, range } = request.params;
+
+    console.log('getData', id, range);
 
     switch (range) {
       case 'lastDay': {
