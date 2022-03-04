@@ -1,6 +1,7 @@
 import * as mqtt from 'mqtt';
 import metricModel from './metrics/metrics.model';
 import { SCALE_TOPIC } from './config';
+import stockModel from './stock/stock.model';
 
 const watchedTopics = [
   `${SCALE_TOPIC}/currentWeight`,
@@ -23,6 +24,7 @@ class Mqtt {
     let createdMetric;
     let newMetric;
     const metric = metricModel;
+    const stock = stockModel;
 
     client.on('connect', function () {
       watchedTopics.forEach((topic) => {
@@ -38,10 +40,21 @@ class Mqtt {
       let foundRFID;
       // Gewicht
       if (topic === watchedTopics[0]) {
+        let previousWeight;
+        let diffWeight;
+
+        await metric
+          .findOne({ topic: 'home/catbert/scales/Scale001/currentWeight' })
+          .sort({ timestamp: -1 })
+          .then((weight) => (previousWeight = parseFloat(weight.value)));
+
+        console.log('Previous weight', previousWeight);
+
         await metric
           .findOne({ topic: 'home/catbert/scales/Scale001/currentRFID' })
           .sort({ timestamp: -1 })
           .then((rfid) => (foundRFID = rfid));
+
         newMetric = {
           topic: topic,
           value: message.toString().replace(/ /g, ''),
@@ -49,6 +62,21 @@ class Mqtt {
           timestamp: Date(),
           scale: '61f2979c9ccf0a042c7667bf',
         };
+
+        console.log('Nieuw gewicht', parseFloat(newMetric.value));
+        console.log('Verschil: ', previousWeight - parseFloat(newMetric.value));
+
+        const currentStock = await stock.findOne();
+
+        await stock.findOneAndUpdate(
+          {},
+          {
+            value: (
+              currentStock.value -
+              (previousWeight - parseFloat(newMetric.value))
+            ).toFixed(0),
+          },
+        );
       }
 
       // RFID

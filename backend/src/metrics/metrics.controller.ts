@@ -1,7 +1,7 @@
 import { Request, Response, Router } from 'express';
 import Metric from './metric.interface';
 import metricModel from './metrics.model';
-import catModel from '../cats/cats.model';
+
 class MetricsController {
   public path = '/metrics';
   public router = Router();
@@ -14,10 +14,18 @@ class MetricsController {
   public initializeRoutes() {
     this.router.post(this.path, this.create);
     this.router.get(this.path, this.getAll);
+    this.router.get(`${this.path}/currentWeight`, this.getCurrentWeight);
     this.router.get(`${this.path}/latest`, this.getLatest);
     this.router.get(`${this.path}/:id`, this.getByScaleId);
     this.router.get(`${this.path}/:range/:id`, this.getMetricsByRange);
   }
+
+  private getCurrentWeight = async (request: Request, response: Response) => {
+    await this.metric
+      .findOne({ topic: 'home/catbert/scales/Scale001/currentWeight' })
+      .sort({ timestamp: -1 })
+      .then((currentWeight) => response.send(currentWeight.value));
+  };
 
   private getAll = (request: Request, response: Response) => {
     this.metric.find().then((metrics) => {
@@ -37,8 +45,6 @@ class MetricsController {
   private getMetricsByRange = (request: Request, response: Response) => {
     let fromDate: Date;
     const { id, range } = request.params;
-
-    console.log('getData', id, range);
 
     switch (range) {
       case 'lastDay': {

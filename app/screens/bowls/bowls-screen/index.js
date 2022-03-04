@@ -27,6 +27,7 @@ function Bowls({ navigation }) {
 
   const [scaleDayMetrics, setScaleDayMetrics] = useState();
   const [scaleWeekMetrics, setScaleWeekMetrics] = useState();
+  const [currentWeight, setCurrentWeight] = useState(0.00);
 
   const fetchData = async () => {
     const dataScales = await getEntity('scales');
@@ -37,23 +38,29 @@ function Bowls({ navigation }) {
   };
 
   const fetchMetrics = async () => {
-    const metricsLastDay = await fetch('http://localhost:3000/metrics/lastDay/61f2979c9ccf0a042c7667bf', {
+    const currentWeightData = await fetch('http://localhost:3000/metrics/currentWeight', {
       method: 'GET',
     });
 
-    const metricsLastWeek = await fetch('http://localhost:3000/metrics/lastWeek/61f2979c9ccf0a042c7667bf', {
+    const metricsLastDayData = await fetch('http://localhost:3000/metrics/lastDay/61f2979c9ccf0a042c7667bf', {
       method: 'GET',
     });
 
-    const metricsDay = await metricsLastDay.json();
-    const metricsWeek = await metricsLastWeek.json();
+    const metricsLastWeekData = await fetch('http://localhost:3000/metrics/lastWeek/61f2979c9ccf0a042c7667bf', {
+      method: 'GET',
+    });
 
-    setScaleDayMetrics(metricsDay.map((metric) => ({
+    const metricsLastDay = await metricsLastDayData.json();
+    const metricsLastWeek = await metricsLastWeekData.json();
+
+    setCurrentWeight(await currentWeightData.json());
+
+    setScaleDayMetrics(metricsLastDay.map((metric) => ({
       value: Math.floor(Number(metric.value) + 5),
       timestamp: metric.timestamp,
     })));
 
-    setScaleWeekMetrics(metricsWeek.map((metric) => ({
+    setScaleWeekMetrics(metricsLastWeek.map((metric) => ({
       value: Math.floor(Number(metric.value) + 5),
       timestamp: metric.timestamp,
     })));
@@ -89,7 +96,7 @@ function Bowls({ navigation }) {
           <View key={scale._id}>
             <BowlItem
               item={scale}
-              status="Huidig gewicht: 193g"
+              status={currentWeight ? `${currentWeight} gram` : ''}
               icon={{
                 name: 'bowl',
               }}
@@ -111,7 +118,6 @@ function Bowls({ navigation }) {
           </Pressable>
         )}
       </View>
-
     </ScrollView>
   );
 }
