@@ -14,6 +14,7 @@ class MetricsController {
   public initializeRoutes() {
     this.router.post(this.path, this.create);
     this.router.get(this.path, this.getAll);
+    this.router.get(`${this.path}/latest`, this.getLatest);
     this.router.get(`${this.path}/:id`, this.getByScaleId);
     this.router.get(`${this.path}/:range/:id`, this.getMetricsByRange);
   }
@@ -22,6 +23,15 @@ class MetricsController {
     this.metric.find().then((metrics) => {
       response.send(metrics);
     });
+  };
+
+  private getLatest = (request: Request, response: Response) => {
+    this.metric
+      .findOne({
+        topic: 'home/catbert/scales/Scale001/currentRFID',
+      })
+      .sort({ timestamp: -1 })
+      .then((foundMetric) => response.send(foundMetric));
   };
 
   private getMetricsByRange = (request: Request, response: Response) => {

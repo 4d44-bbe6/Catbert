@@ -15,7 +15,19 @@ class StockController {
     this.router.get(this.path, this.getAll);
     this.router.post(this.path, this.create);
     this.router.patch(`${this.path}/:id`, this.update);
+    this.router.delete(`${this.path}/:id`, this.remove);
   }
+
+  private remove = (request: Request, response: Response) => {
+    const id = request.params.id;
+    this.stock.findByIdAndDelete(id).then((successResponse) => {
+      if (successResponse) {
+        response.sendStatus(200);
+      } else {
+        response.sendStatus(404);
+      }
+    });
+  };
 
   private create = (request: Request, response: Response) => {
     const stockData: Stock = {

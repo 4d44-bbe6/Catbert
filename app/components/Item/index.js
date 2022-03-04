@@ -4,7 +4,7 @@ import {
   FontAwesome5, MaterialCommunityIcons, AntDesign, Entypo,
 } from '@expo/vector-icons';
 
-import AddButton from '../elements/AddButton';
+import RemoveButton from '../elements/RemoveButton';
 import { styles } from '../../styles';
 
 function Item({
@@ -12,9 +12,10 @@ function Item({
 }) {
   const [showRemove, setShowRemove] = useState(false);
   const [confirmRemove, setConfirmRemove] = useState(false);
-  const removeScale = async (scaleId) => {
+
+  const removeItem = async (id) => {
     setConfirmRemove(false);
-    await remove(scaleId);
+    await remove(id);
   };
 
   return (
@@ -42,8 +43,8 @@ function Item({
       {confirmRemove && (
       <View style={styles.warningContainer}>
         <Text style={styles.warningTitle}>Weet je zeker dat het item wil verwijderen?</Text>
-        <Pressable onPress={() => { removeScale(item._id); }}>
-          <AddButton />
+        <Pressable onPress={() => { removeItem(item._id); }}>
+          <RemoveButton />
         </Pressable>
       </View>
       )}

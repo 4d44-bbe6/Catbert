@@ -1,14 +1,19 @@
 /* eslint-disable no-underscore-dangle */
 import {
-  ScrollView, View, Text, Pressable,
+  ScrollView, View, Pressable,
 } from 'react-native';
 import { useEffect, useState } from 'react';
-import { AntDesign } from '@expo/vector-icons';
+
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import {
+  ALERT_TYPE, Toast,
+} from 'react-native-alert-notification';
 import Item from '../../../components/Item';
 import { getEntity } from '../../../util';
 import StockAddScreen from '../stock-add-screen';
+import AddButton from '../../../components/elements/AddButton';
+import { styles } from '../../../styles';
 
 const Stack = createNativeStackNavigator();
 
@@ -24,24 +29,33 @@ function Stock({ navigation }) {
     fetchData();
   }, []);
 
+  const removeBowl = async (id) => {
+    await fetch(`http://localhost:3000/stock/${id}`, {
+      method: 'DELETE',
+    });
+
+    Toast.show({
+      type: ALERT_TYPE.SUCCESS,
+      title: 'Voorraad verwijderd!',
+    });
+    fetchData();
+  };
+
   return (
     <ScrollView>
-      {stock.length > 0 ? stock.map((item) => (
-        <View key={item._id}>
-          <Item name={item.name} status={`${item.value} gram`} icon={{ name: 'warehouse' }} />
-        </View>
-      )) : (
-        <View>
-          <Text>Voeg een voorraad toe</Text>
-          <Pressable onPress={() => {
-            navigation.push('addStock');
-          }}
-          >
-            <AntDesign name="pluscircle" size={24} color="green" />
-          </Pressable>
-        </View>
-      )}
-
+      <View style={styles.column}>
+        {stock.length > 0 && stock.map((item) => (
+          <View key={item._id}>
+            <Item item={item} status={`${item.value} gram`} icon={{ name: 'warehouse' }} remove={removeBowl} />
+          </View>
+        ))}
+      </View>
+      <Pressable onPress={() => {
+        navigation.push('addStock');
+      }}
+      >
+        <AddButton />
+      </Pressable>
     </ScrollView>
   );
 }

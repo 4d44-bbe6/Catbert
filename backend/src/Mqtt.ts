@@ -1,13 +1,15 @@
 import * as mqtt from 'mqtt';
 import metricModel from './metrics/metrics.model';
+import { SCALE_TOPIC } from './config';
 
 const watchedTopics = [
-  'home/catbert/scales/Scale001/currentWeight',
-  'home/catbert/scales/Scale001/currentRFID',
+  `${SCALE_TOPIC}/currentWeight`,
+  `${SCALE_TOPIC}/currentRFID`,
 ];
 
 class Mqtt {
   private static server: string;
+
   public topics: Array<string>;
 
   constructor(server: string, topics: Array<string>) {
@@ -18,6 +20,9 @@ class Mqtt {
 
   private initializeBrokerConnection() {
     const client = mqtt.connect(`mqtt://${Mqtt.server}`);
+    let createdMetric;
+    let newMetric;
+    const metric = metricModel;
 
     client.on('connect', function () {
       watchedTopics.forEach((topic) => {
@@ -29,39 +34,43 @@ class Mqtt {
       });
     });
 
-    client.on('message', function (topic, message) {
+    client.on('message', async function (topic, message) {
+      let foundRFID;
+      // Gewicht
       if (topic === watchedTopics[0]) {
-        const value = message.toString().replace(/ /g, '');
-
-        const metric = {
+        await metric
+          .findOne({ topic: 'home/catbert/scales/Scale001/currentRFID' })
+          .sort({ timestamp: -1 })
+          .then((rfid) => (foundRFID = rfid));
+        newMetric = {
           topic: topic,
-          value: value,
+          value: message.toString().replace(/ /g, ''),
+          rfid: foundRFID.value,
           timestamp: Date(),
           scale: '61f2979c9ccf0a042c7667bf',
         };
-        const createdMetric = new metricModel(metric);
-        createdMetric.save();
       }
+
+      // RFID
+      if (topic === watchedTopics[1]) {
+        console.log('rfid');
+        newMetric = {
+          topic: topic,
+          value: message.toString(),
+          timestamp: Date(),
+          scale: '61f2979c9ccf0a042c7667bf',
+        };
+      }
+
+      createdMetric = new metricModel(newMetric);
+      createdMetric.save().then((res) => console.log(res));
     });
   }
 
   static sendCommand(command: string): void {
     console.log('command to mqtt', command);
     const client = mqtt.connect(`mqtt://${Mqtt.server}`);
-    client.publish('home/catbert/scales/Scale001/command', command);
-  }
-
-  static getNewRFID(): string {
-    let rfid = '';
-    const client = mqtt.connect(`mqtt://${Mqtt.server}`);
-    client.subscribe('home/catbert/newRFID', function (err) {
-      if (!err) {
-        client.on('message', function (topic, message) {
-          rfid = message.toString();
-        });
-      }
-    });
-    return rfid;
+    client.publish(`${SCALE_TOPIC}/command`, command);
   }
 }
 

@@ -61,7 +61,6 @@ function BowlAddScreen({ route, navigation }) {
         keyboardType="default"
         returnKeyType="next"
       />
-
       <DropDownPicker
         open={pickerCatsOpen}
         value={pickerCatsValue}

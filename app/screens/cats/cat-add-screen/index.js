@@ -1,36 +1,48 @@
 import { useState } from 'react';
 import { View, Text } from 'react-native';
+import {
+  ALERT_TYPE, Toast,
+} from 'react-native-alert-notification';
 import { Button, TextInput } from 'react-native-paper';
 import { styles } from '../../../styles';
 
-function CatAddScreen() {
+function CatAddScreen({ navigation }) {
   const [newCat, setNewCat] = useState();
-  const [addedCat, setAddedCat] = useState(false);
+  const [addingCat, toggleAddingCat] = useState(false);
+  const [gettingRFID, toggleGettingRFID] = useState(false);
+  const [latestRFID, setLatestRFID] = useState();
 
   const saveNew = async () => {
-    // await fetch('http://localhost:3000/cats/', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify({
-    //     name: newCat,
-    //   }),
-    // });
-
-    // setAddedCat(true);
-    // setNewCat('');
-
-    const response = await fetch('http://localhost:3000/cats/registerRFID', {
+    await fetch('http://localhost:3000/cats/registerRFID/', {
       method: 'POST',
-      header: {
+      headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         name: newCat,
       }),
     });
-    console.log(response);
+
+    setTimeout(() => {
+      Toast.show({
+        type: ALERT_TYPE.SUCCESS,
+        position: 'bottom',
+        title: 'Kat toegevoegd!',
+      });
+      navigation.push('Cats');
+    }, 1000);
+  };
+
+  const getRFID = async () => {
+    toggleGettingRFID(true);
+    const result = await fetch('http://localhost:3000/metrics/latest', {
+      method: 'GET',
+    });
+    const dataLatestRFID = await result.json();
+
+    setTimeout(() => {
+      setLatestRFID(dataLatestRFID.value);
+    }, 5000);
   };
 
   return (
@@ -44,14 +56,29 @@ function CatAddScreen() {
         keyboardType="default"
         returnKeyType="next"
       />
-      {!addedCat
-        ? <Button onPress={() => saveNew()}>Toevoegen</Button>
-        : (
-          <View style={styles.container}>
-            <Text style={styles.text}>Plaats de chip van het huisdier nu tegen de sensor.</Text>
-            <Text style={styles.text}>Wachten op validatie van de chip...</Text>
-          </View>
+
+      <Button onPress={() => {
+        toggleAddingCat(true);
+        getRFID();
+      }}
+      >
+        Chip registreren
+      </Button>
+      {addingCat && (
+      <View style={styles.container}>
+        <Text style={styles.text}>Plaats de chip van het huisdier nu tegen de sensor en druk op toevoegen</Text>
+        {gettingRFID && <Text>Wachten op aanwezige chip...</Text>}
+        {latestRFID && (
+        <Text>
+          Chip gedetecteerd met id:
+          {' '}
+          {latestRFID}
+        </Text>
         )}
+        <Button onPress={() => saveNew()}>Toevoegen</Button>
+      </View>
+      )}
+
     </View>
   );
 }

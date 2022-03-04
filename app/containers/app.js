@@ -8,6 +8,7 @@ function AppContainer() {
     <Root
       toastConfig={{
         autoClose: 1000,
+        position: 'bottom',
       }}
     >
       <PaperProvider>

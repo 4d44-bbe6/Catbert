@@ -12,7 +12,7 @@ import PieChart from '../../../components/charts/PieChart';
 import { styles } from '../../../styles';
 
 function BowlItem({
-  scale, status, icon, remove = false, metrics,
+  item, status, icon, remove = false, metrics,
 }) {
   const [showRemove, setShowRemove] = useState(false);
   const [confirmRemove, setConfirmRemove] = useState(false);
@@ -42,7 +42,7 @@ function BowlItem({
                 : <FontAwesome5 name={icon.name} size={24} />}
             </View>
             <View style={styles.titleContainer}>
-              <Text style={styles.title}>{`${scale.name}`}</Text>
+              <Text style={styles.title}>{`${item.name}`}</Text>
               <Text style={styles.subtitle}>{status}</Text>
             </View>
           </View>
@@ -60,7 +60,7 @@ function BowlItem({
       <View style={[styles.row, styles.warningContainer]}>
         <Text style={styles.warningTitle}>Weet je zeker dat het item wil verwijderen?</Text>
         <Pressable onPress={() => {
-          removeScale(scale._id);
+          removeScale(item._id);
         }}
         >
           <AntDesign name="checkcircle" size={24} color="white" />
@@ -73,7 +73,7 @@ function BowlItem({
         <View>
           <Text style={styles.graphTitle}>Gewicht afgelopen 24 uur.</Text>
           <LineChart
-            scale={scale._id}
+            scale={item._id}
             labels={metrics.day.map((scaleMetric) => `${scaleMetric.timestamp}:00`)}
             data={metrics.day.map((scaleMetric) => (scaleMetric.value))}
           />
@@ -83,11 +83,11 @@ function BowlItem({
         <View>
           <Text style={styles.graphTitle}>Gewicht afgelopen 7 dagen.</Text>
           <LineChart
-            scale={scale._id}
+            scale={item._id}
             labels={metrics.week.map((scaleMetric) => `${scaleMetric.timestamp}`)}
             data={metrics.week.map((scaleMetric) => (scaleMetric.value))}
           />
-          <PieChart scale={scale._id} />
+          <PieChart scale={item._id} />
         </View>
         )}
 

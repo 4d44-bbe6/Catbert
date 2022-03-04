@@ -47,7 +47,7 @@ PubSubClient client(ethClient);
 // RFID variables
 char rfid_buffer[100];
 String rfidtag;
-String prevrfidTag;
+String newRfidtag;
 
 // Ethernet variables
 uint8_t mac[6] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x06};
@@ -81,18 +81,19 @@ float getWeight()
  */
 void publishWeight(float weight)
 {
+    // limit the data with an interval
     if (millis() - lastDataSent > REFRESH_INTERVAL)
     {
-        Serial.print("CurrentWeight: ");
-        Serial.print(weight);
-        Serial.print("             ");
-        Serial.print("Previous weight: ");
-        Serial.print(prevWeight);
-        Serial.println();
-
         // Only sent weight to mqtt when there is atleast a difference of 5g
         if (weight - prevWeight > 5.00 || prevWeight - weight > 5.00)
         {
+            Serial.print("CurrentWeight: ");
+            Serial.print(weight);
+            Serial.print("             ");
+            Serial.print("Previous weight: ");
+            Serial.print(prevWeight);
+            Serial.println();
+
             dtostrf(weight, BUFFER_SIZE - 1 /*width, including the decimal dot and minus sign*/, 2 /*precision*/, buffer);
             client.publish("home/catbert/scales/Scale001/currentWeight", buffer, BUFFER_SIZE);
             lastDataSent = millis();
@@ -101,32 +102,85 @@ void publishWeight(float weight)
     }
 }
 
-void publishRFID()
+String getRFID()
 {
-
-    rfidtag = rfid.readTag();
-    rfid.printTag(rfidtag);
-
-    if (rfidtag != "None")
+    if (rfid.readTag() != "None")
     {
-        lcd.setCursor(0, 0);
-        lcd.print(rfidtag);
-        lcd.setCursor(1, 1);
-        lcd.print(rfidtag);
-        delay(500);
+        rfidtag = rfid.readTag();
+        rfid.printTag(rfidtag);
+        Serial.println(rfidtag);
+        lcd.setCursor(0, 1);
+        lcd.print("RFID: " + rfidtag);
+    }
+    else
+    {
+        rfidtag = "None";
     }
 
-    if (millis() - lastDataSent > 5000)
+    return rfidtag;
+}
+
+void publishRFID(String rfidtag)
+{
+    if (millis() - lastDataSent > 5000 && rfidtag != "None")
     {
-        rfidtag.toCharArray(rfid_buffer, 11);
+        rfidtag.toCharArray(rfid_buffer, rfidtag.length() + 1);
         client.publish("home/catbert/scales/Scale001/currentRFID", rfid_buffer);
         lastDataSent = 0;
     }
 }
 
-boolean connect()
+void callback(char *topic, byte *message, unsigned int length)
 {
-    Serial.println("Connecting to MQTT");
+    Serial.print("Message arrived on topic: ");
+    Serial.print(topic);
+    Serial.print(". Message: ");
+    String messageTemp;
+
+    for (int i = 0; i < length; i++)
+    {
+        Serial.print((char)message[i]);
+        messageTemp += (char)message[i];
+    }
+    Serial.println();
+
+    if (String(topic) == "home/catbert/scales/Scale001/command")
+    {
+        lcd.clear();
+        lcd.setCursor(0, 1);
+
+        Serial.println("Receiving new command");
+        if (messageTemp == "registerNewCat")
+        {
+
+            Serial.println("Register-mode");
+            lcd.print("Register-mode");
+            delay(3000);
+            lcd.clear();
+        }
+    }
+}
+
+boolean reconnect()
+{
+
+    while (!client.connected())
+    {
+        Serial.println("Connecting to MQTT");
+        if (client.connect("client"))
+        {
+            Serial.println("Connected");
+            client.subscribe("home/catbert/scales/Scale001/command");
+        }
+        else
+        {
+            Serial.print("Failed: ");
+            Serial.print(client.state());
+            Serial.println("Trying again in 5 seconds");
+            delay(5000);
+        }
+    }
+
     if (client.connect("client"))
     {
         client.publish("home/catbert/scales/Scale001/status", "\"online\"");
@@ -147,19 +201,9 @@ void setup()
             ;
     }
 
-    if (!client.connected())
-    {
-        if (connect())
-        {
-            lastReconnectAttempt = 0;
-        }
-    }
-
     Serial.println(F("Ethernet configured via DHCP"));
     Serial.print("IP address: ");
     Serial.println(Ethernet.localIP());
-
-    // Cleanup any previous commands
 
     // Scale
     scale.set_scale(calibration_factor);
@@ -172,9 +216,12 @@ void setup()
     lcd.begin(16, 2); // 16 characters, 2 rows
     lcd.setCursor(0, 0);
     lcd.print("IP: " + Ethernet.localIP());
-    delay(500);
+    delay(500); // Delaying to show IP
+    lcd.clear();
 
     client.setServer(mqtt_server, 1883);
+    client.setCallback(callback);
+    client.setKeepAlive(1000);
 
     Serial.println("Setup done");
 }
@@ -184,30 +231,14 @@ void loop()
 
     if (!client.connected())
     {
-        Serial.println("MQTT not connected!");
-
-        if (millis() - lastReconnectAttempt > REFRESH_INTERVAL)
-        {
-
-            if (connect())
-            {
-                lastReconnectAttempt += REFRESH_INTERVAL;
-            }
-        }
-    }
-    else
-    {
-        client.loop();
-
-        double currentWeight = getWeight();
-        publishWeight(currentWeight);
-
-        publishRFID();
-
-        // Subscribe to command topic to check if there are tasks to be done.
-
-        client.setKeepAlive(1000);
+        reconnect();
     }
 
+    client.loop();
+
+    double currentWeight = getWeight();
+    publishWeight(currentWeight);
+    String currentRFID = getRFID();
+    publishRFID(currentRFID);
     delay(500);
 }

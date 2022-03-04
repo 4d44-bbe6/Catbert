@@ -21,7 +21,6 @@ export const styles = StyleSheet.create({
   container: {
     padding: 20,
     display: 'flex',
-
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -50,7 +49,9 @@ export const styles = StyleSheet.create({
   },
   warningContainer: {
     backgroundColor: colors.warning,
-    padding: 10,
+    display: 'flex',
+    padding: 20,
+    flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },

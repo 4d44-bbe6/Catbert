@@ -2,12 +2,14 @@ import { Request, Response, Router } from 'express';
 
 import Cat from './cat.interface';
 import catModel from './cats.model';
+import metricModel from '../metrics/metrics.model';
 import Mqtt from '../Mqtt';
 
 class CatsController {
   public path = '/cats';
   public router = Router();
   private cat = catModel;
+  private metric = metricModel;
 
   constructor() {
     this.initializeRoutes();
@@ -15,11 +17,11 @@ class CatsController {
 
   private initializeRoutes() {
     this.router.post(this.path, this.createEndPoint);
+    this.router.post(`${this.path}/registerRFID`, this.addRFID);
     this.router.get(this.path, this.getAll);
     this.router.get(`${this.path}/:id`, this.getById);
     this.router.patch(`${this.path}/:id`, this.update);
     this.router.delete(`${this.path}/:id`, this.remove);
-    this.router.post(`${this.path}/registerRFID`, this.addRFID);
   }
 
   private createEndPoint = async (request: Request, response: Response) => {
@@ -65,16 +67,20 @@ class CatsController {
   };
 
   private addRFID = async (request: Request, response: Response) => {
-    console.log(request);
     Mqtt.sendCommand('registerNewCat');
 
-    let rfid = '';
-    while (rfid !== '') {
-      rfid = Mqtt.getNewRFID();
-      console.log(rfid);
-    }
+    const { value } = await this.metric
+      .findOne({ topic: 'home/catbert/scales/Scale001/currentRFID' })
+      .sort({ timestamp: -1 });
+    const { name } = request.body;
 
-    response.send(`registering new cat for: ${rfid}`);
+    const newCat = await this.create({
+      name,
+      rfid: value,
+    });
+
+    console.log('new Cat', newCat);
+    response.send(newCat);
   };
 
   private create = async (data) => {

@@ -16,6 +16,7 @@ import BowlSupplyScreen from '../bowl-supply-screen';
 import AddButton from '../../../components/elements/AddButton';
 import { styles, theme } from '../../../styles';
 
+// import Item from '../../../components/Item';
 import BowlItem from '../bowl-screen';
 
 const Stack = createNativeStackNavigator();
@@ -59,18 +60,21 @@ function Bowls({ navigation }) {
   };
 
   const removeScale = async (id) => {
-    const response = await fetch(`http://localhost:3000/scales/${id}`, {
+    await fetch(`http://localhost:3000/scales/${id}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
       },
     });
-    Toast.show({
-      type: ALERT_TYPE.SUCCESS,
-      title: 'Voerbak verwijderd!',
-    });
-    fetchData();
-    return response;
+
+    setTimeout(() => {
+      Toast.show({
+        type: ALERT_TYPE.SUCCESS,
+        position: 'bottom',
+        title: 'Voerbak verwijderd!',
+      });
+      fetchData();
+    }, 1000);
   };
 
   useEffect(() => {
@@ -81,10 +85,10 @@ function Bowls({ navigation }) {
   return (
     <ScrollView>
       <View style={styles.column}>
-        {scales.length > 0 && scales.map((scale) => (
+        {scales.length > 0 ? scales.map((scale) => (
           <View key={scale._id}>
             <BowlItem
-              scale={scale}
+              item={scale}
               status="Huidig gewicht: 193g"
               icon={{
                 name: 'bowl',
@@ -96,16 +100,18 @@ function Bowls({ navigation }) {
               }}
             />
           </View>
-        ))}
+        )) : (
+          <Pressable onPress={() => {
+            navigation.push('addBowl', {
+              cats,
+            });
+          }}
+          >
+            <AddButton />
+          </Pressable>
+        )}
       </View>
-      <Pressable onPress={() => {
-        navigation.push('addBowl', {
-          cats,
-        });
-      }}
-      >
-        <AddButton />
-      </Pressable>
+
     </ScrollView>
   );
 }
@@ -121,7 +127,7 @@ function BowlsScreen() {
           name="Bowls"
           component={Bowls}
           options={{
-            title: 'Overzicht voerbakken',
+            title: 'Voerbak',
           }}
 
         />

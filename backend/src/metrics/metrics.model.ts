@@ -4,6 +4,7 @@ import IMetric from './metric.interface';
 const metricSchema = new Schema({
   topic: String,
   value: Schema.Types.Mixed,
+  rfid: String,
   scale: {
     ref: 'Scale',
     type: Schema.Types.ObjectId,

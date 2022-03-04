@@ -1,10 +1,16 @@
-import { ScrollView, Text } from 'react-native';
+import { View, Text } from 'react-native';
+
+import { styles } from '../../styles';
 
 function InfoScreen() {
   return (
-    <ScrollView>
-      <Text>Informatie over de app</Text>
-    </ScrollView>
+    <View style={styles.container}>
+      <View>
+        <Text>Catbert</Text>
+        <Text>Auteur: Jeroen van der Schaaf</Text>
+        <Text>In opdracht van: NHL Stenden - HBO ICT Flex</Text>
+      </View>
+    </View>
   );
 }
 

@@ -5,11 +5,15 @@ import {
 } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import {
+  ALERT_TYPE, Toast,
+} from 'react-native-alert-notification';
 import CatAddScreen from '../cat-add-screen';
 import Item from '../../../components/Item';
 import { getEntity } from '../../../util';
 
 import AddButton from '../../../components/elements/AddButton';
+import { styles } from '../../../styles';
 
 const Stack = createNativeStackNavigator();
 
@@ -21,32 +25,47 @@ function Cats({ navigation }) {
     setCats(dataCats);
   };
 
+  const removeCat = async (id) => {
+    await fetch(`http://localhost:3000/cats/${id}`, {
+      method: 'DELETE',
+    });
+
+    setTimeout(() => {
+      Toast.show({
+        type: ALERT_TYPE.SUCCESS,
+        position: 'bottom',
+        title: 'Voerbak verwijderd!',
+      });
+
+      fetchData();
+    }, 500);
+  };
+
   useEffect(() => {
     fetchData();
   }, []);
 
   return (
-    <View>
-      <View>
-        <ScrollView>
-          {cats.length > 0 && cats.map((cat) => (
-            <View key={cat._id}>
-              <Item item={cat} status="Laatst gezien: 13:24" icon={{ name: 'cat' }} />
-            </View>
-          ))}
-        </ScrollView>
-        <View>
-          <Pressable onPress={() => {
-            navigation.push('addCat', {
-              cats,
-            });
-          }}
-          >
-            <AddButton />
-          </Pressable>
-        </View>
+    <ScrollView>
+      <View style={styles.column}>
+        {cats.length > 0 && cats.map((cat) => (
+          <View key={cat._id}>
+            <Item item={cat} status="Laatst gezien: 13:24" icon={{ name: 'cat' }} remove={removeCat} />
+          </View>
+        ))}
       </View>
-    </View>
+      <View>
+        <Pressable onPress={() => {
+          navigation.push('addCat', {
+            cats,
+          });
+        }}
+        >
+          <AddButton />
+        </Pressable>
+      </View>
+
+    </ScrollView>
   );
 }
 

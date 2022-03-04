@@ -1,7 +1,8 @@
-import { ScrollView, Text } from 'react-native';
+import { View, Text, TextInput } from 'react-native';
 import { useState } from 'react';
 import { Button } from 'react-native-paper';
-import { StyledTextInput } from '../../../styles';
+
+import { styles } from '../../../styles';
 
 function StockAddScreen({ navigation }) {
   const [newStockName, setNewStockName] = useState('');
@@ -33,8 +34,9 @@ function StockAddScreen({ navigation }) {
   };
 
   return (
-    <ScrollView>
-      <StyledTextInput
+    <View style={styles.container}>
+      <TextInput
+        style={styles.input}
         placeholder="Naam"
         value={newStockName}
         onChangeText={setNewStockName}
@@ -42,16 +44,17 @@ function StockAddScreen({ navigation }) {
         keyboardType="default"
         returnKeyType="next"
       />
-      <StyledTextInput
+      <TextInput
+        style={styles.input}
         placeholder="Gewicht in gram"
-        value={newStockValue.toString()}
+        value={newStockValue && newStockValue.toString()}
         onChangeText={setNewStockValue}
         multiline={false}
         keyboardType="numeric"
         returnKeyType="next"
       />
       {!addedStock ? <Button onPress={() => saveNew()}>Toevoegen</Button> : <Text>Je voorraad is toegevoegd.</Text>}
-    </ScrollView>
+    </View>
   );
 }
 
