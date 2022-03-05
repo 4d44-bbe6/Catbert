@@ -52,7 +52,7 @@ function Cats({ navigation }) {
           const lastSeen = new Date(cat.lastUpdated);
           return (
             <View key={cat._id}>
-              <Item item={cat} status={`Laatst gezien: ${lastSeen}`} icon={{ name: 'cat' }} remove={removeCat} />
+              <Item item={cat} status={`Laatst gezien: ${lastSeen.toLocaleDateString('NL-nl')} - ${lastSeen.toLocaleTimeString('nl-NL')}`} icon={{ name: 'cat' }} remove={removeCat} />
             </View>
           );
         })}
