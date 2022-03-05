@@ -8,11 +8,16 @@ import {
 
 import LineChart from '../../../components/charts/LineChart';
 import PieChart from '../../../components/charts/PieChart';
-
 import { styles } from '../../../styles';
 
+const COLORS = [
+  'rgb(0, 0, 255)',
+  'rgb(255, 255, 0)',
+  'rgb(255, 0, 255)',
+];
+
 function BowlItem({
-  item, status, icon, remove = false, metrics,
+  item, status, icon, remove = false, metrics, cats,
 }) {
   const [showRemove, setShowRemove] = useState(false);
   const [confirmRemove, setConfirmRemove] = useState(false);
@@ -43,7 +48,7 @@ function BowlItem({
             </View>
             <View style={styles.titleContainer}>
               <Text style={styles.title}>{`${item.name}`}</Text>
-              <Text style={styles.subtitle}>{status}</Text>
+              <Text style={styles.subtitle}>{status.toString()}</Text>
             </View>
           </View>
           {remove && showRemove
@@ -86,8 +91,22 @@ function BowlItem({
             scale={item._id}
             labels={metrics.week.map((scaleMetric) => `${scaleMetric.timestamp}`)}
             data={metrics.week.map((scaleMetric) => (scaleMetric.value))}
+
           />
-          <PieChart scale={item._id} />
+          <Text style={styles.graphTitle}>Totaal gegeten per kat.</Text>
+          <PieChart
+            data={cats.map((cat, index) => ({
+              id: cat._id,
+              name: `${cat.name} - gram`,
+              amount: parseInt(cat.amountEaten, 10),
+              legendFontColor: '#7F7F7F',
+              legendFontSize: 15,
+              color: COLORS[index],
+            }
+
+            ))}
+          />
+
         </View>
         )}
 

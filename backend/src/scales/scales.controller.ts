@@ -3,6 +3,9 @@ import Scale from './scale.interface';
 import scaleModel from './scales.model';
 import catModel from '../cats/cats.model';
 
+/**
+ * Provides CRUD endpoints for the Scales.
+ */
 class ScalesController {
   public path = '/scales';
   public router = Router();

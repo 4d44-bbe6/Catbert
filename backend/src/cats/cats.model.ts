@@ -4,6 +4,8 @@ import ICat from './cat.interface';
 const catSchema = new Schema({
   name: String,
   rfid: String,
+  color: String,
+  amountEaten: Number,
   scales: [
     {
       ref: 'Scale',

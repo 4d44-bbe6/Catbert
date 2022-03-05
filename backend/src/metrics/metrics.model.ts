@@ -12,6 +12,16 @@ const metricSchema = new Schema({
   timestamp: Date,
 });
 
+metricSchema.virtual('cat', {
+  ref: 'Cat',
+  localField: 'rfid',
+  foreignField: 'rfid',
+  justOne: true,
+});
+
+metricSchema.set('toObject', { virtuals: true });
+metricSchema.set('toJSON', { virtuals: true });
+
 const metricModel = model<IMetric & Document>('Metric', metricSchema);
 
 export default metricModel;

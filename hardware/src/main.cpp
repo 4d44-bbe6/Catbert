@@ -111,6 +111,8 @@ String getRFID()
         Serial.println(rfidtag);
         lcd.setCursor(0, 1);
         lcd.print("RFID: " + rfidtag);
+        delay(2000);
+        lcd.clear();
     }
     else
     {
@@ -207,7 +209,6 @@ void setup()
 
     // Scale
     scale.set_scale(calibration_factor);
-    scale.tare();
 
     // RFID
     rfid.init();

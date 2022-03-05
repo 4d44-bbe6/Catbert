@@ -34,7 +34,7 @@ function Cats({ navigation }) {
       Toast.show({
         type: ALERT_TYPE.SUCCESS,
         position: 'bottom',
-        title: 'Voerbak verwijderd!',
+        title: 'Kat verwijderd!',
       });
 
       fetchData();
@@ -48,11 +48,14 @@ function Cats({ navigation }) {
   return (
     <ScrollView>
       <View style={styles.column}>
-        {cats.length > 0 && cats.map((cat) => (
-          <View key={cat._id}>
-            <Item item={cat} status="Laatst gezien: 13:24" icon={{ name: 'cat' }} remove={removeCat} />
-          </View>
-        ))}
+        {cats.length > 0 && cats.map((cat) => {
+          const lastSeen = new Date(cat.lastUpdated);
+          return (
+            <View key={cat._id}>
+              <Item item={cat} status={`Laatst gezien: ${lastSeen}`} icon={{ name: 'cat' }} remove={removeCat} />
+            </View>
+          );
+        })}
       </View>
       <View>
         <Pressable onPress={() => {

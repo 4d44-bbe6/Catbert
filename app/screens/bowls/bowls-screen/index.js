@@ -27,6 +27,7 @@ function Bowls({ navigation }) {
 
   const [scaleDayMetrics, setScaleDayMetrics] = useState();
   const [scaleWeekMetrics, setScaleWeekMetrics] = useState();
+  const [amountEaten, setAmountEaten] = useState([]);
   const [currentWeight, setCurrentWeight] = useState(0.00);
 
   const fetchData = async () => {
@@ -50,8 +51,13 @@ function Bowls({ navigation }) {
       method: 'GET',
     });
 
+    const amountEatenByCatsData = await fetch('http://localhost:3000/cats/', {
+      method: 'GET',
+    });
+
     const metricsLastDay = await metricsLastDayData.json();
     const metricsLastWeek = await metricsLastWeekData.json();
+    const amountEatenByCats = await amountEatenByCatsData.json();
 
     setCurrentWeight(await currentWeightData.json());
 
@@ -64,6 +70,8 @@ function Bowls({ navigation }) {
       value: Math.floor(Number(metric.value) + 5),
       timestamp: metric.timestamp,
     })));
+
+    setAmountEaten(amountEatenByCats);
   };
 
   const removeScale = async (id) => {
@@ -96,7 +104,7 @@ function Bowls({ navigation }) {
           <View key={scale._id}>
             <BowlItem
               item={scale}
-              status={currentWeight ? `${currentWeight} gram` : ''}
+              status={currentWeight ? `${parseInt(currentWeight.value, 10)} gram` : ''}
               icon={{
                 name: 'bowl',
               }}
@@ -105,6 +113,7 @@ function Bowls({ navigation }) {
                 day: scaleDayMetrics,
                 week: scaleWeekMetrics,
               }}
+              cats={amountEaten}
             />
           </View>
         )) : (

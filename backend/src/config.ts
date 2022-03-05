@@ -8,3 +8,5 @@ export const MONGODB_ATLAS_USER = process.env.MONGODB_ATLAS_USER!;
 export const MONGODB_ATLAS_PASSWORD = process.env.MONGODB_ATLAS_PASSWORD!;
 export const MQTT_SERVER = process.env.MQTT_SERVER!;
 export const SCALE_TOPIC = process.env.SCALE_TOPIC!;
+export const WEIGHT_TOPIC = process.env.WEIGHT_TOPIC;
+export const RFID_TOPIC = process.env.RFID_TOPIC;
