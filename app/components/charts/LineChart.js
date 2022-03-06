@@ -18,7 +18,7 @@ function LineChart({ data, labels }) {
       width={Dimensions.get('window').width}
       height={250}
       yAxisSuffix="g"
-      yAxisInterval={10}
+      yAxisInterval={1}
       chartConfig={chartConfig}
       bezier
       style={chartStyle}

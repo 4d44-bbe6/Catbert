@@ -1,19 +1,15 @@
-import { View, Text, TextInput } from 'react-native';
+import { View, TextInput } from 'react-native';
 import { useState } from 'react';
 import { Button } from 'react-native-paper';
+import {
+  ALERT_TYPE, Toast,
+} from 'react-native-alert-notification';
 
 import { styles } from '../../../styles';
 
 function StockAddScreen({ navigation }) {
   const [newStockName, setNewStockName] = useState('');
-  const [newStockValue, setNewStockValue] = useState(0);
-  const [addedStock, setAddedStock] = useState();
-
-  const clearInput = () => {
-    setAddedStock(true);
-    setNewStockValue(0);
-    setNewStockName('');
-  };
+  const [newStockValue, setNewStockValue] = useState();
 
   const saveNew = async () => {
     await fetch('http://localhost:3000/stock/', {
@@ -27,8 +23,12 @@ function StockAddScreen({ navigation }) {
       }),
     });
 
-    clearInput();
     setTimeout(() => {
+      Toast.show({
+        type: ALERT_TYPE.SUCCESS,
+        position: 'bottom',
+        title: 'Voorraad toegevoegd!',
+      });
       navigation.push('Stock');
     }, 1000);
   };
@@ -53,7 +53,7 @@ function StockAddScreen({ navigation }) {
         keyboardType="numeric"
         returnKeyType="next"
       />
-      {!addedStock ? <Button onPress={() => saveNew()}>Toevoegen</Button> : <Text>Je voorraad is toegevoegd.</Text>}
+      <Button onPress={() => saveNew()}>Toevoegen</Button>
     </View>
   );
 }

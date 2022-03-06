@@ -117,14 +117,16 @@ function Bowls({ navigation }) {
             />
           </View>
         )) : (
-          <Pressable onPress={() => {
-            navigation.push('addBowl', {
-              cats,
-            });
-          }}
-          >
-            <AddButton />
-          </Pressable>
+          <View style={{ marginTop: '5%' }}>
+            <Pressable onPress={() => {
+              navigation.push('addBowl', {
+                cats,
+              });
+            }}
+            >
+              <AddButton />
+            </Pressable>
+          </View>
         )}
       </View>
     </ScrollView>

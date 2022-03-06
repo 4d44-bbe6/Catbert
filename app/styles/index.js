@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
 import { DefaultTheme } from '@react-navigation/native';
 
-import { padding } from './helpers';
+import { margin, padding } from './helpers';
 
 export const colors = {
   primary: '#145DA0',
@@ -32,6 +32,10 @@ export const styles = StyleSheet.create({
   row: {
     display: 'flex',
     flexDirection: 'row',
+  },
+  textContainer: {
+    ...margin(20, 20),
+    textAlign: 'left',
   },
   itemContainer: {
     backgroundColor: colors.primary,

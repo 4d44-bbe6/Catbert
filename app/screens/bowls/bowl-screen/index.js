@@ -79,7 +79,7 @@ function BowlItem({
           <Text style={styles.graphTitle}>Gewicht afgelopen 24 uur.</Text>
           <LineChart
             scale={item._id}
-            labels={metrics.day.map((scaleMetric) => `${scaleMetric.timestamp}:00`)}
+            labels={metrics.day.map((scaleMetric) => `${scaleMetric.timestamp}`)}
             data={metrics.day.map((scaleMetric) => (scaleMetric.value))}
           />
         </View>
@@ -89,7 +89,7 @@ function BowlItem({
           <Text style={styles.graphTitle}>Gewicht afgelopen 7 dagen.</Text>
           <LineChart
             scale={item._id}
-            labels={metrics.week.map((scaleMetric) => `${scaleMetric.timestamp}`)}
+            labels={metrics.week.map((scaleMetric) => `${scaleMetric.timestamp}`).reverse()}
             data={metrics.week.map((scaleMetric) => (scaleMetric.value))}
 
           />
@@ -97,7 +97,7 @@ function BowlItem({
           <PieChart
             data={cats.map((cat, index) => ({
               id: cat._id,
-              name: `${cat.name} - gram`,
+              name: `gram - ${cat.name}`,
               amount: parseInt(cat.amountEaten, 10),
               legendFontColor: '#7F7F7F',
               legendFontSize: 15,

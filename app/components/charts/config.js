@@ -11,7 +11,8 @@ export const chartConfig = {
   labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
   propsForDots: {
     r: '2',
-    strokeWidth: '1',
+    strokeWidth: '5',
     stroke: '#ffa726',
   },
+  barPercentage: '.5',
 };

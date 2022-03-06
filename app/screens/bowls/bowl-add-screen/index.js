@@ -1,27 +1,22 @@
 /* eslint-disable no-underscore-dangle */
 import { useState } from 'react';
-import { View, Text, TextInput } from 'react-native';
+import { View, TextInput } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { Button } from 'react-native-paper';
+import {
+  ALERT_TYPE, Toast,
+} from 'react-native-alert-notification';
 
 import { styles } from '../../../styles';
 
 function BowlAddScreen({ route, navigation }) {
   const { cats } = route.params;
 
-  const [addedScale, setAddedScale] = useState(false);
-
   const [pickerCatsOpen, setPickerCatsOpen] = useState(false);
   const [pickerCatsValue, setPickerCatsValue] = useState([]);
 
   const [scaleName, setScaleName] = useState();
   const [scaleAddress, setScaleAddress] = useState();
-
-  const clearInput = () => {
-    setAddedScale(true);
-    setScaleName('');
-    setScaleAddress('');
-  };
 
   const addScale = async () => {
     await fetch('http://localhost:3000/scales/', {
@@ -35,8 +30,13 @@ function BowlAddScreen({ route, navigation }) {
           pickerCatsValue,
       }),
     });
-    clearInput();
+
     setTimeout(() => {
+      Toast.show({
+        type: ALERT_TYPE.SUCCESS,
+        position: 'bottom',
+        title: 'Voorraad toegevoegd!',
+      });
       navigation.push('Bowls');
     }, 1000);
   };
@@ -83,9 +83,8 @@ function BowlAddScreen({ route, navigation }) {
         }}
 
       />
-      {addedScale !== true
-        ? <Button onPress={() => addScale()}>Voeg een voerbak toe toe</Button>
-        : <Text>Je voerbak is toegevoegd.</Text>}
+      <Button onPress={() => addScale()}>Voeg een voerbak toe toe</Button>
+
     </View>
   );
 }

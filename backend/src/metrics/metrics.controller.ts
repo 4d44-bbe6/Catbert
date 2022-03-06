@@ -88,6 +88,8 @@ class MetricsController {
    */
   private getMetricsByRange = (request: Request, response: Response) => {
     let fromDate: Date;
+    let toDate: Date;
+
     const { id, range } = request.params;
 
     switch (range) {
@@ -97,28 +99,54 @@ class MetricsController {
        */
       case 'lastDay': {
         const parsedMetrics = [];
-        fromDate = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
+        fromDate = new Date(Date.now() - 1 * 24 * 60 * 60 * 1000);
+        toDate = new Date(Date.now());
+
         this.metric
           .find({
             scale: id,
             topic: WEIGHT_TOPIC,
             timestamp: {
               $gte: fromDate,
-              $lte: Date.now(),
+              $lte: toDate,
             },
           })
           .then((foundMetrics) => {
+            let prevValue = 0;
+
+            const d = new Date();
+            const currentHour = d.getHours();
+            console.log(currentHour);
+
+            const hoursDay = [
+              0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
+              19, 20, 21, 22, 23,
+            ];
+
+            const prevHoursDay = hoursDay.splice(
+              0,
+              hoursDay.indexOf(currentHour, 0),
+            );
+
+            const nextHoursDay = hoursDay.splice(
+              hoursDay.indexOf(currentHour, 0),
+            );
+
+            const parsedHours = nextHoursDay.concat(prevHoursDay).reverse();
+            console.log(parsedHours);
+
             for (let i = 0; i <= 23; i++) {
               let tmpCount = 0;
               const avgMetric = [];
               foundMetrics.forEach((foundMetric) => {
                 const metricHour = foundMetric['timestamp'].getHours();
-
-                if (metricHour === i) {
+                if (metricHour === i && foundMetric['value'] !== prevValue) {
                   avgMetric.push({
-                    hour: i,
+                    hour: parsedHours[i],
                     value: parseInt(foundMetric['value']),
                   });
+                  prevValue = foundMetric['value'];
                 }
               });
               avgMetric.forEach(({ value }) => {
@@ -126,7 +154,7 @@ class MetricsController {
               });
               if (avgMetric.length > 0) {
                 parsedMetrics.push({
-                  timestamp: i,
+                  timestamp: parsedHours[i],
                   value: tmpCount / avgMetric.length,
                 });
               }

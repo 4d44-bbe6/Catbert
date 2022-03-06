@@ -209,6 +209,7 @@ void setup()
 
     // Scale
     scale.set_scale(calibration_factor);
+    scale.tare();
 
     // RFID
     rfid.init();
@@ -216,8 +217,8 @@ void setup()
     // LCD
     lcd.begin(16, 2); // 16 characters, 2 rows
     lcd.setCursor(0, 0);
-    lcd.print("IP: " + Ethernet.localIP());
-    delay(500); // Delaying to show IP
+    lcd.print(Ethernet.localIP());
+    delay(5000); // Delaying to show IP
     lcd.clear();
 
     client.setServer(mqtt_server, 1883);
