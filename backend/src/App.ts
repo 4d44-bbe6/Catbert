@@ -39,7 +39,7 @@ class App {
   }
 
   private async initDB(): Promise<Connection> {
-    const mongoDB = `mongodb+srv://${MONGODB_ATLAS_USER}:${MONGODB_ATLAS_PASSWORD}@cluster0.kk4in.mongodb.net/Catbert?retryWrites=true&w=majority`;
+    const mongoDB = `mongodb+srv://${MONGODB_ATLAS_USER}:${MONGODB_ATLAS_PASSWORD}@cluster0.kk4in.mongodb.net/?retryWrites=true&w=majority`;
     await connect(mongoDB);
     const db = connection;
     db.on('error', console.error.bind(console, 'MongoDB connection error: '));

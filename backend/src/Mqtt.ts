@@ -80,7 +80,9 @@ class Mqtt {
         };
 
         const differenceWeight = previousWeight - parseFloat(newMetric.value);
-        const currentStock = await stock.findOne();
+        const currentStock = (await stock.findOne()) || {
+          value: 0,
+        };
 
         await stock.findOneAndUpdate(
           {},
@@ -89,9 +91,11 @@ class Mqtt {
           },
         );
 
-        const currentCat = await cat.findOne({
+        const currentCat = (await cat.findOne({
           rfid: foundRFID,
-        });
+        })) || {
+          amountEaten: 0,
+        };
 
         await cat.findOneAndUpdate(
           { rfid: foundRFID },
