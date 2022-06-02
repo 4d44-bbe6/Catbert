@@ -1,0 +1,12 @@
+{
+  "appInfo": {
+      "title": "login",
+      "version": "1.0.0"
+  },
+  "bowls": [{
+    "id": "61bf39cba5c5e88791ea926e",
+    "name": "Voerbak - bijkeuken",
+    "description": "Kattenbak voor alle katten"
+  }],
+  "cats": ["Ortiz", "Nano", "Solo"]
+}
