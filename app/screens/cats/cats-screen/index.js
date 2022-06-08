@@ -1,13 +1,9 @@
 /* eslint-disable no-underscore-dangle */
 import { useState, useEffect } from 'react';
-import {
-  View, Pressable, ScrollView,
-} from 'react-native';
+import { View, Pressable, ScrollView } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import {
-  ALERT_TYPE, Toast,
-} from 'react-native-alert-notification';
+import { ALERT_TYPE, Toast } from 'react-native-alert-notification';
 import CatAddScreen from '../cat-add-screen';
 import Item from '../../../components/Item';
 import { getEntity } from '../../../util';
@@ -26,7 +22,7 @@ function Cats({ navigation }) {
   };
 
   const removeCat = async (id) => {
-    await fetch(`http://localhost:3000/cats/${id}`, {
+    await fetch(`http://192.168.178.4:3000/cats/${id}`, {
       method: 'DELETE',
     });
 
@@ -48,26 +44,33 @@ function Cats({ navigation }) {
   return (
     <ScrollView>
       <View style={styles.column}>
-        {cats.length > 0 && cats.map((cat) => {
-          const lastSeen = new Date(cat.lastUpdated);
-          return (
-            <View key={cat._id}>
-              <Item item={cat} status={`Laatst gezien: ${lastSeen.toLocaleDateString('NL-nl')} - ${lastSeen.toLocaleTimeString('nl-NL')}`} icon={{ name: 'cat' }} remove={removeCat} />
-            </View>
-          );
-        })}
+        {cats.length > 0 &&
+          cats.map((cat) => {
+            const lastSeen = new Date(cat.lastUpdated);
+            return (
+              <View key={cat._id}>
+                <Item
+                  item={cat}
+                  status={`Laatst gezien: ${lastSeen.toLocaleDateString(
+                    'NL-nl',
+                  )} - ${lastSeen.toLocaleTimeString('nl-NL')}`}
+                  icon={{ name: 'cat' }}
+                  remove={removeCat}
+                />
+              </View>
+            );
+          })}
       </View>
       <View>
-        <Pressable onPress={() => {
-          navigation.push('addCat', {
-            cats,
-          });
-        }}
-        >
+        <Pressable
+          onPress={() => {
+            navigation.push('addCat', {
+              cats,
+            });
+          }}>
           <AddButton />
         </Pressable>
       </View>
-
     </ScrollView>
   );
 }

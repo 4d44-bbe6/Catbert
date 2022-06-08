@@ -1,9 +1,7 @@
 import { View, TextInput } from 'react-native';
 import { useState } from 'react';
 import { Button } from 'react-native-paper';
-import {
-  ALERT_TYPE, Toast,
-} from 'react-native-alert-notification';
+import { ALERT_TYPE, Toast } from 'react-native-alert-notification';
 
 import { styles } from '../../../styles';
 
@@ -12,7 +10,7 @@ function StockAddScreen({ navigation }) {
   const [newStockValue, setNewStockValue] = useState();
 
   const saveNew = async () => {
-    await fetch('http://localhost:3000/stock/', {
+    await fetch('http://192.168.178.4:3000/stock/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

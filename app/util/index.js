@@ -1,6 +1,6 @@
 export const getEntity = async (entity) => {
   try {
-    const result = await fetch(`http://localhost:3000/${entity}`, {
+    const result = await fetch(`http://192.168.178.4:3000/${entity}`, {
       method: 'GET',
     });
     const data = await result.json();

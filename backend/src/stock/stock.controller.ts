@@ -3,8 +3,8 @@ import stockModel from './stock.model';
 import Stock from './stock.interface';
 
 class StockController {
-  public path = '/stock';
-  public router = Router();
+  private path = '/stock';
+  private router = Router();
   private stock = stockModel;
 
   constructor() {

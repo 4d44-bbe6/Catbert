@@ -1,13 +1,9 @@
 import { useEffect, useState } from 'react';
-import {
-  View, ScrollView, Pressable,
-} from 'react-native';
+import { View, ScrollView, Pressable } from 'react-native';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import {
-  ALERT_TYPE, Toast,
-} from 'react-native-alert-notification';
+import { ALERT_TYPE, Toast } from 'react-native-alert-notification';
 
 import { getEntity } from '../../../util';
 import BowlAddScreen from '../bowl-add-screen';
@@ -28,7 +24,7 @@ function Bowls({ navigation }) {
   const [scaleDayMetrics, setScaleDayMetrics] = useState();
   const [scaleWeekMetrics, setScaleWeekMetrics] = useState();
   const [amountEaten, setAmountEaten] = useState([]);
-  const [currentWeight, setCurrentWeight] = useState(0.00);
+  const [currentWeight, setCurrentWeight] = useState(0.0);
 
   const fetchData = async () => {
     const dataScales = await getEntity('scales');
@@ -39,19 +35,25 @@ function Bowls({ navigation }) {
   };
 
   const fetchMetrics = async () => {
-    const currentWeightData = await fetch('http://localhost:3000/metrics/currentWeight', {
+    const currentWeightData = await fetch('http://192.168.178.4:3000/metrics/currentWeight', {
       method: 'GET',
     });
 
-    const metricsLastDayData = await fetch('http://localhost:3000/metrics/lastDay/61f2979c9ccf0a042c7667bf', {
-      method: 'GET',
-    });
+    const metricsLastDayData = await fetch(
+      'http://192.168.178.4:3000/metrics/lastDay/61f2979c9ccf0a042c7667bf',
+      {
+        method: 'GET',
+      },
+    );
 
-    const metricsLastWeekData = await fetch('http://localhost:3000/metrics/lastWeek/61f2979c9ccf0a042c7667bf', {
-      method: 'GET',
-    });
+    const metricsLastWeekData = await fetch(
+      'http://192.168.178.4:3000/metrics/lastWeek/61f2979c9ccf0a042c7667bf',
+      {
+        method: 'GET',
+      },
+    );
 
-    const amountEatenByCatsData = await fetch('http://localhost:3000/cats/', {
+    const amountEatenByCatsData = await fetch('http://192.168.178.4:3000/cats/', {
       method: 'GET',
     });
 
@@ -61,21 +63,25 @@ function Bowls({ navigation }) {
 
     setCurrentWeight(await currentWeightData.json());
 
-    setScaleDayMetrics(metricsLastDay.map((metric) => ({
-      value: Math.floor(Number(metric.value) + 5),
-      timestamp: metric.timestamp,
-    })));
+    setScaleDayMetrics(
+      metricsLastDay.map((metric) => ({
+        value: Math.floor(Number(metric.value) + 5),
+        timestamp: metric.timestamp,
+      })),
+    );
 
-    setScaleWeekMetrics(metricsLastWeek.map((metric) => ({
-      value: Math.floor(Number(metric.value) + 5),
-      timestamp: metric.timestamp,
-    })));
+    setScaleWeekMetrics(
+      metricsLastWeek.map((metric) => ({
+        value: Math.floor(Number(metric.value) + 5),
+        timestamp: metric.timestamp,
+      })),
+    );
 
     setAmountEaten(amountEatenByCats);
   };
 
   const removeScale = async (id) => {
-    await fetch(`http://localhost:3000/scales/${id}`, {
+    await fetch(`http://192.168.178.4:3000/scales/${id}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -100,30 +106,32 @@ function Bowls({ navigation }) {
   return (
     <ScrollView>
       <View style={styles.column}>
-        {scales.length > 0 ? scales.map((scale) => (
-          <View key={scale._id}>
-            <BowlItem
-              item={scale}
-              status={currentWeight ? `${parseInt(currentWeight.value, 10)} gram` : ''}
-              icon={{
-                name: 'bowl',
-              }}
-              remove={removeScale}
-              metrics={{
-                day: scaleDayMetrics,
-                week: scaleWeekMetrics,
-              }}
-              cats={amountEaten}
-            />
-          </View>
-        )) : (
+        {scales.length > 0 ? (
+          scales.map((scale) => (
+            <View key={scale._id}>
+              <BowlItem
+                item={scale}
+                status={currentWeight ? `${parseInt(currentWeight.value, 10)} gram` : ''}
+                icon={{
+                  name: 'bowl',
+                }}
+                remove={removeScale}
+                metrics={{
+                  day: scaleDayMetrics,
+                  week: scaleWeekMetrics,
+                }}
+                cats={amountEaten}
+              />
+            </View>
+          ))
+        ) : (
           <View style={{ marginTop: '5%' }}>
-            <Pressable onPress={() => {
-              navigation.push('addBowl', {
-                cats,
-              });
-            }}
-            >
+            <Pressable
+              onPress={() => {
+                navigation.push('addBowl', {
+                  cats,
+                });
+              }}>
               <AddButton />
             </Pressable>
           </View>
@@ -135,10 +143,7 @@ function Bowls({ navigation }) {
 
 function BowlsScreen() {
   return (
-    <NavigationContainer
-      theme={theme}
-      independent
-    >
+    <NavigationContainer theme={theme} independent>
       <Stack.Navigator>
         <Stack.Screen
           name="Bowls"
@@ -146,7 +151,6 @@ function BowlsScreen() {
           options={{
             title: 'Voerbak',
           }}
-
         />
         <Stack.Screen
           name="addBowl"

@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import { View, Text } from 'react-native';
-import {
-  ALERT_TYPE, Toast,
-} from 'react-native-alert-notification';
+import { ALERT_TYPE, Toast } from 'react-native-alert-notification';
 import { Button, TextInput } from 'react-native-paper';
 import { styles } from '../../../styles';
 
@@ -13,7 +11,7 @@ function CatAddScreen({ navigation }) {
   const [latestRFID, setLatestRFID] = useState();
 
   const saveNew = async () => {
-    await fetch('http://localhost:3000/cats/registerRFID/', {
+    await fetch('http://192.168.178.4:3000/cats/registerRFID/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -35,7 +33,7 @@ function CatAddScreen({ navigation }) {
 
   const getRFID = async () => {
     toggleGettingRFID(true);
-    const result = await fetch('http://localhost:3000/metrics/latest', {
+    const result = await fetch('http://192.168.178.4:3000/metrics/latest', {
       method: 'GET',
     });
     const dataLatestRFID = await result.json();
@@ -57,28 +55,23 @@ function CatAddScreen({ navigation }) {
         returnKeyType="next"
       />
 
-      <Button onPress={() => {
-        toggleAddingCat(true);
-        getRFID();
-      }}
-      >
+      <Button
+        onPress={() => {
+          toggleAddingCat(true);
+          getRFID();
+        }}>
         Chip registreren
       </Button>
       {addingCat && (
-      <View style={styles.container}>
-        <Text style={styles.text}>Plaats de chip van het huisdier nu tegen de sensor en druk op toevoegen</Text>
-        {gettingRFID && <Text>Wachten op aanwezige chip...</Text>}
-        {latestRFID && (
-        <Text>
-          Chip gedetecteerd met id:
-          {' '}
-          {latestRFID}
-        </Text>
-        )}
-        <Button onPress={() => saveNew()}>Toevoegen</Button>
-      </View>
+        <View style={styles.container}>
+          <Text style={styles.text}>
+            Plaats de chip van het huisdier nu tegen de sensor en druk op toevoegen
+          </Text>
+          {gettingRFID && <Text>Wachten op aanwezige chip...</Text>}
+          {latestRFID && <Text>Chip gedetecteerd met id: {latestRFID}</Text>}
+          <Button onPress={() => saveNew()}>Toevoegen</Button>
+        </View>
       )}
-
     </View>
   );
 }

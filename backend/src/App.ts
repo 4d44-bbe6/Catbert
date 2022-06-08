@@ -1,6 +1,7 @@
 import * as express from 'express';
 import { Connection, connect, connection } from 'mongoose';
 import Mqtt from './Mqtt';
+import { PORT } from './config';
 import bodyParser = require('body-parser');
 
 import {
@@ -10,15 +11,19 @@ import {
 } from './config';
 
 class App {
-  public app: express.Application;
-  public port: number;
+  private app: express.Application;
+  private port: number;
 
-  constructor(controllers, port) {
+  constructor(controllers) {
     this.app = express();
-    this.port = port;
+
     this.initializeMiddlewares();
     this.initializeControllers(controllers);
     this.initDB();
+    this.initMqtt();
+  }
+
+  private initMqtt(): void {
     new Mqtt(MQTT_SERVER, ['currentWeight', 'currentCat']);
   }
 
@@ -33,8 +38,8 @@ class App {
   }
 
   public listen(): void {
-    this.app.listen(this.port, () => {
-      console.log(`App listening on the port ${this.port}`);
+    this.app.listen(PORT, () => {
+      console.log(`App listening on the port ${PORT}`);
     });
   }
 
