@@ -4,7 +4,7 @@ import CatsController from './cats/cats.controller';
 import MetricsController from './metrics/metrics.controller';
 import StockController from './stock/stock.controller';
 
-const app = new App([
+const app = App.getInstance([
   new ScalesController(),
   new CatsController(),
   new MetricsController(),

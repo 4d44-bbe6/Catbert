@@ -11,16 +11,24 @@ import {
 } from './config';
 
 class App {
+  private static instance: App;
   private app: express.Application;
-  private port: number;
 
-  constructor(controllers) {
+  private constructor(controllers) {
     this.app = express();
 
     this.initializeMiddlewares();
     this.initializeControllers(controllers);
     this.initDB();
     this.initMqtt();
+  }
+
+  public static getInstance(controllers): App {
+    if (!App.instance) {
+      App.instance = new App(controllers);
+    }
+
+    return App.instance;
   }
 
   private initMqtt(): void {
