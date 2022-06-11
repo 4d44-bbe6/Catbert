@@ -36,6 +36,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
+    "dependency-cruiser": "^11.9.0",
     "eslint": "^8.5.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-prettier": "^8.3.0",
